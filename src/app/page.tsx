@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link"; // Import Link from next/link
 
 export default function Home() {
   return (
@@ -30,12 +31,16 @@ export default function Home() {
             </a>
           </nav>
           <div className="flex space-x-4 ml-4">
-            <button className="btn btn-outline btn-primary text-green-500 border-green-500 text-sm py-1 px-3">
-              Log In
-            </button>
-            <button className="btn btn-outline btn-secondary text-green-500 border-green-500 text-sm py-1 px-3">
-              Sign Up
-            </button>
+            <Link href="/Login">
+              <button className="btn btn-outline btn-primary text-green-500 border-green-500 text-sm py-1 px-3">
+                Log In
+              </button>
+            </Link>
+            <Link href="/SignUp">
+              <button className="btn btn-outline btn-secondary text-green-500 border-green-500 text-sm py-1 px-3">
+                Sign Up
+              </button>
+            </Link>
           </div>
         </div>
       </header>
