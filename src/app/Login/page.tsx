@@ -2,13 +2,47 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import Link from "next/link"; // Import Link from next/link
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setError(null);
+
+    try {
+      const response = await fetch("/api/Auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Store the token and username in localStorage
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("username", data.username);
+        // Redirect to HomePage
+        router.push("/HomePage");
+      } else {
+        setError(data.message);
+      }
+    } catch (error) {
+      setError("An error occurred. Please try again.");
+    }
   };
 
   return (
@@ -20,12 +54,9 @@ export default function Login() {
         loop
         muted
       />
-      <div className="absolute top-0 left-0 w-full h-full bg-black opacity-75"></div>{" "}
-      {/* Dark overlay */}
+      <div className="absolute top-0 left-0 w-full h-full bg-black opacity-75"></div>
       <div className="flex items-center justify-center min-h-screen relative z-10">
         <div className="bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg p-8 rounded-lg shadow-lg w-full max-w-sm">
-          {" "}
-          {/* Adjusted for transparency */}
           <div className="flex flex-col items-center mb-6">
             <Image
               src="/images/logo.png"
@@ -42,7 +73,8 @@ export default function Login() {
               </Link>
             </a>
           </div>
-          <form>
+          <form onSubmit={handleSubmit}>
+            {error && <div className="mb-4 text-red-500 text-sm">{error}</div>}
             <div className="mb-4">
               <label
                 className="block text-gray-400 text-sm mb-2"
@@ -55,6 +87,8 @@ export default function Login() {
                 type="text"
                 id="username"
                 name="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
               />
             </div>
@@ -71,6 +105,8 @@ export default function Login() {
                   type={showPassword ? "text" : "password"}
                   id="password"
                   name="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   required
                 />
                 <button
@@ -92,8 +128,6 @@ export default function Login() {
             </div>
             <div className="text-center">
               <Link href="/ForgotPassword" className="text-gray-500 text-sm">
-                {" "}
-                {/* Use Link to navigate */}
                 Forgot password?
               </Link>
             </div>
