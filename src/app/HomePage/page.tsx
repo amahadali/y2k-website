@@ -1,8 +1,8 @@
 // src/app/HomePage/page.tsx
-
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Navbar from "./components/Navbar";
 import Feed from "./components/Feed";
 import ClusterPopup from "./components/ClusterPopup";
@@ -12,6 +12,28 @@ export default function HomePage() {
   const [showClusterPopup, setShowClusterPopup] = useState(false);
   const [showElementPopup, setShowElementPopup] = useState(false);
   const [category, setCategory] = useState("");
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch("/api/homepage/homepage");
+        if (!response.ok) {
+          throw new Error("Authentication required");
+        }
+        const data = await response.json();
+        setUser(data.user);
+      } catch (error) {
+        console.log(error);
+        router.push("/Login");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUser();
+  }, [router]);
 
   const openClusterPopup = () => setShowClusterPopup(true);
   const closeClusterPopup = () => setShowClusterPopup(false);
@@ -21,6 +43,14 @@ export default function HomePage() {
     setShowElementPopup(false);
     setCategory("");
   };
+
+  if (loading) {
+    return <div>Loading...</div>; // or a loading spinner
+  }
+
+  if (!user) {
+    return null; // or redirect to login page
+  }
 
   return (
     <div className="min-h-screen bg-black text-white">

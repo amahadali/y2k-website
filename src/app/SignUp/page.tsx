@@ -29,19 +29,32 @@ export default function Signup() {
         body: JSON.stringify({ username, email, password }),
       });
 
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message);
+      }
+
       const data = await response.json();
 
       if (data.success) {
-        // Store the username and a placeholder token in localStorage
-        localStorage.setItem("username", username);
-        localStorage.setItem("token", "fake-jwt-token");
+        // Store the token in cookies
+        document.cookie = `token=${data.token}; path=/;`;
+        console.log("Token set in cookies:", data.token);
+
         // Redirect to HomePage
         router.push("/HomePage");
       } else {
         setError(data.message);
+        console.log("Signup failed:", data.message);
       }
-    } catch (error) {
-      setError("An error occurred. Please try again.");
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+        console.log("Error during signup:", err.message);
+      } else {
+        setError("An unknown error occurred. Please try again.");
+        console.log("Unknown error during signup:", err);
+      }
     }
   };
 
