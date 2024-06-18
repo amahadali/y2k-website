@@ -41,6 +41,9 @@ export default function Signup() {
         document.cookie = `token=${data.token}; path=/;`;
         console.log("Token set in cookies:", data.token);
 
+        // Store the username in local storage
+        localStorage.setItem("username", data.username);
+
         // Redirect to HomePage
         router.push("/HomePage");
       } else {

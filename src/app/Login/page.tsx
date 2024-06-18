@@ -1,4 +1,3 @@
-// src/app/Login/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -40,6 +39,9 @@ export default function Login() {
         // Store the token in cookies
         document.cookie = `token=${data.token}; path=/;`;
         console.log("Token set in cookies:", data.token);
+
+        // Store the username in local storage
+        localStorage.setItem("username", data.username);
 
         // Redirect to HomePage
         router.push("/HomePage");

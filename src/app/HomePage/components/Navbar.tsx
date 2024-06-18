@@ -28,12 +28,24 @@ const Navbar: React.FC<NavbarProps> = ({
     setProfileDropdownOpen(!profileDropdownOpen);
   const toggleCreateDropdown = () => setCreateDropdownOpen(!createDropdownOpen);
 
-  const handleLogout = () => {
-    // Clear the token and username from localStorage
-    localStorage.removeItem("token");
-    localStorage.removeItem("username");
-    // Redirect to the login page
-    router.push("/Login");
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("/api/Auth/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        // Redirect to the login page
+        router.push("/Login");
+      } else {
+        console.log("Logout failed:", response.statusText);
+      }
+    } catch (error) {
+      console.log("Error during logout:", error);
+    }
   };
 
   return (
