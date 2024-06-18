@@ -1,6 +1,6 @@
 // pages/api/wallpapers/index.js
-import dbConnect from "../../../lib/dbConnect";
-import Wallpaper from "../../../models/Wallpaper";
+import dbConnect from "../../../../lib/dbConnect";
+import Wallpaper from "../../../../models/Wallpaper";
 
 export default async function handler(req, res) {
   const { method } = req;
