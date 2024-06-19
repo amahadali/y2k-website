@@ -1,5 +1,3 @@
-//fix feed to show everything
-
 import React, { useEffect, useState } from "react";
 
 interface Post {

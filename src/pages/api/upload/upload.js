@@ -14,7 +14,8 @@ export default async function handler(req, res) {
     const userId = req.user.id;
 
     if (method === "POST") {
-      const { postType, title, additionalFields, fileUrl } = req.body;
+      const { postType, title, additionalFields, fileUrl, imageFileUrl } =
+        req.body;
 
       let contentDocument;
 
@@ -23,7 +24,7 @@ export default async function handler(req, res) {
           contentDocument = new Game({
             title,
             ...additionalFields,
-            imageUrl: fileUrl,
+            imageUrl: imageFileUrl,
             user: userId,
           });
           break;
@@ -32,6 +33,7 @@ export default async function handler(req, res) {
             title,
             ...additionalFields,
             mp3Url: fileUrl,
+            imageUrl: imageFileUrl,
             user: userId,
           });
           break;
@@ -40,6 +42,7 @@ export default async function handler(req, res) {
             title,
             ...additionalFields,
             mp3Url: fileUrl,
+            imageUrl: imageFileUrl,
             user: userId,
           });
           break;
@@ -60,7 +63,7 @@ export default async function handler(req, res) {
 
       const newPost = new Post({
         title,
-        imageUrl: fileUrl,
+        imageUrl: imageFileUrl,
         postType,
         contentId: savedContent._id,
         user: userId,

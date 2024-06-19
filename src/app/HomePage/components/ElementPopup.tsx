@@ -15,6 +15,7 @@ const ElementPopup: React.FC<ElementPopupProps> = ({
   const [artistName, setArtistName] = useState("");
   const [developerName, setDeveloperName] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -22,10 +23,17 @@ const ElementPopup: React.FC<ElementPopupProps> = ({
     }
   };
 
+  const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setImageFile(e.target.files[0]);
+    }
+  };
+
   const handleUpload = async () => {
-    if (!file) return;
+    if (!file || !imageFile) return;
 
     const fileUrl = URL.createObjectURL(file); // Temporary URL for local testing
+    const imageFileUrl = URL.createObjectURL(imageFile); // Temporary URL for local testing
 
     let additionalFields: { [key: string]: string } = {};
 
@@ -40,6 +48,7 @@ const ElementPopup: React.FC<ElementPopupProps> = ({
       title,
       additionalFields,
       fileUrl,
+      imageFileUrl,
     };
 
     try {
@@ -117,12 +126,20 @@ const ElementPopup: React.FC<ElementPopupProps> = ({
               onChange={(e) => setArtistName(e.target.value)}
             />
             <label className="block text-sm font-medium text-gray-400 mb-2 mt-4">
-              Upload Image
+              Upload MP3
             </label>
             <input
               type="file"
               className="w-full px-4 py-2 bg-gray-700 text-white rounded-md focus:outline-none"
               onChange={handleFileChange}
+            />
+            <label className="block text-sm font-medium text-gray-400 mb-2 mt-4">
+              Upload Image
+            </label>
+            <input
+              type="file"
+              className="w-full px-4 py-2 bg-gray-700 text-white rounded-md focus:outline-none"
+              onChange={handleImageFileChange}
             />
           </div>
         )}
@@ -142,7 +159,7 @@ const ElementPopup: React.FC<ElementPopupProps> = ({
             <input
               type="file"
               className="w-full px-4 py-2 bg-gray-700 text-white rounded-md focus:outline-none"
-              onChange={handleFileChange}
+              onChange={handleImageFileChange}
             />
           </div>
         )}
@@ -176,7 +193,7 @@ const ElementPopup: React.FC<ElementPopupProps> = ({
             <input
               type="file"
               className="w-full px-4 py-2 bg-gray-700 text-white rounded-md focus:outline-none"
-              onChange={handleFileChange}
+              onChange={handleImageFileChange}
             />
           </div>
         )}
