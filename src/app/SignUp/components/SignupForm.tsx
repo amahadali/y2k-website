@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 interface SignupFormProps {
   onSignupSuccess: () => void;
 }
 
-const SignupForm = ({ onSignupSuccess }: SignupFormProps) => {
+const SignupForm: React.FC<SignupFormProps> = ({ onSignupSuccess }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -40,15 +41,18 @@ const SignupForm = ({ onSignupSuccess }: SignupFormProps) => {
       const data = await response.json();
 
       if (data.success) {
-        // Store the token in cookies
-        document.cookie = `token=${data.token}; path=/;`;
-        console.log("Token set in cookies:", data.token);
+        // Automatically sign in the user after successful registration
+        const result = await signIn("credentials", {
+          redirect: false,
+          username,
+          password,
+        });
 
-        // Store the username in local storage
-        localStorage.setItem("username", data.username);
-
-        // Redirect to HomePage
-        onSignupSuccess();
+        if (result?.error) {
+          setError(result.error);
+        } else {
+          onSignupSuccess();
+        }
       } else {
         setError(data.message);
         console.log("Signup failed:", data.message);

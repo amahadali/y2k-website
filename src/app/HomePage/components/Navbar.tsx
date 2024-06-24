@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation"; // Updated import for Next.js router
+import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 interface NavbarProps {
   openClusterPopup: () => void;
@@ -13,15 +14,8 @@ const Navbar: React.FC<NavbarProps> = ({
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [createDropdownOpen, setCreateDropdownOpen] = useState(false);
-  const [username, setUsername] = useState<string | null>(null);
-  const router = useRouter(); // Use router for navigation
-
-  useEffect(() => {
-    const storedUsername = localStorage.getItem("username");
-    if (storedUsername) {
-      setUsername(storedUsername);
-    }
-  }, []);
+  const { data: session } = useSession();
+  const router = useRouter();
 
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
   const toggleProfileDropdown = () =>
@@ -29,23 +23,7 @@ const Navbar: React.FC<NavbarProps> = ({
   const toggleCreateDropdown = () => setCreateDropdownOpen(!createDropdownOpen);
 
   const handleLogout = async () => {
-    try {
-      const response = await fetch("/api/auth/logout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-        // Redirect to the login page
-        router.push("/Login");
-      } else {
-        console.log("Logout failed:", response.statusText);
-      }
-    } catch (error) {
-      console.log("Error during logout:", error);
-    }
+    await signOut({ redirect: true, callbackUrl: "/Login" });
   };
 
   return (
@@ -125,7 +103,9 @@ const Navbar: React.FC<NavbarProps> = ({
             <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg py-2 z-20">
               <div className="flex flex-col items-center p-4">
                 <div className="w-16 h-16 bg-gray-600 rounded-full mb-2"></div>
-                <p className="text-white">{username || "Loading..."}</p>
+                <p className="text-white">
+                  {session?.user?.name || "Loading..."}
+                </p>
                 <a href="#" className="text-blue-500 text-sm">
                   View Profile
                 </a>

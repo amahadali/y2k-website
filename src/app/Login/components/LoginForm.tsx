@@ -1,7 +1,9 @@
+// src/app/Login/components/LoginForm.tsx
 "use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
 
 interface LoginFormProps {
@@ -23,38 +25,16 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
     event.preventDefault();
     setError(null);
 
-    try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-      });
+    const result = await signIn("credentials", {
+      redirect: false,
+      username,
+      password,
+    });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      if (data.success) {
-        // Store the token in cookies
-        document.cookie = `token=${data.token}; path=/;`;
-        console.log("Token set in cookies:", data.token);
-
-        // Store the username in local storage
-        localStorage.setItem("username", data.username);
-
-        // Redirect to HomePage
-        onLoginSuccess();
-      } else {
-        setError(data.message);
-        console.log("Login failed:", data.message);
-      }
-    } catch (error) {
-      setError("An error occurred. Please try again.");
-      console.log("Error during login:", error);
+    if (result?.error) {
+      setError(result.error);
+    } else {
+      onLoginSuccess();
     }
   };
 

@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import Navbar from "./components/Navbar";
 import Feed from "./components/Feed";
 import ClusterPopup from "./components/ClusterPopup";
@@ -12,28 +13,15 @@ export default function HomePage() {
   const [showClusterPopup, setShowClusterPopup] = useState(false);
   const [showElementPopup, setShowElementPopup] = useState(false);
   const [category, setCategory] = useState("");
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
   const router = useRouter();
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await fetch("/api/homepage/homepage");
-        if (!response.ok) {
-          throw new Error("Authentication required");
-        }
-        const data = await response.json();
-        setUser(data.user);
-      } catch (error) {
-        console.log(error);
-        router.push("/Login");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchUser();
-  }, [router]);
+    if (!loading && !session) {
+      router.push("/Login");
+    }
+  }, [loading, session, router]);
 
   const openClusterPopup = () => setShowClusterPopup(true);
   const closeClusterPopup = () => setShowClusterPopup(false);
@@ -48,7 +36,7 @@ export default function HomePage() {
     return <div>Loading...</div>; // or a loading spinner
   }
 
-  if (!user) {
+  if (!session) {
     return null; // or redirect to login page
   }
 
