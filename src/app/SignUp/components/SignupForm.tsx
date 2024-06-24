@@ -24,7 +24,7 @@ const SignupForm = ({ onSignupSuccess }: SignupFormProps) => {
     setError(null);
 
     try {
-      const response = await fetch("/api/Auth/signup", {
+      const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

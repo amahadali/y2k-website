@@ -30,7 +30,7 @@ const Navbar: React.FC<NavbarProps> = ({
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("/api/Auth/logout", {
+      const response = await fetch("/api/auth/logout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -1,4 +1,4 @@
-// pages/api/Auth/login.js
+// pages/api/auth/login.js
 import jwt from "jsonwebtoken";
 import cookie from "cookie";
 import dbConnect from "../../../../lib/dbConnect";
