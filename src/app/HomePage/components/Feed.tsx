@@ -1,3 +1,4 @@
+//import "../../globals.css";
 import React, { useEffect, useState } from "react";
 
 interface Post {
@@ -47,31 +48,31 @@ const Feed = () => {
       {posts.map((post) => (
         <div
           key={post._id}
-          className="bg-gray-800 rounded-lg p-4 flex flex-col"
+          className="relative group overflow-hidden rounded-lg shadow-lg"
         >
-          <div className="h-48 bg-gray-700 rounded-md mb-4 relative">
-            <img
-              src={post.imageUrl}
-              alt={post.title}
-              className="w-full h-full object-cover rounded-md"
-            />
+          <img
+            src={post.imageUrl}
+            alt={post.title}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <h3 className="text-white text-lg font-bold">{post.title}</h3>
+            <p className="text-gray-300 capitalize">{post.postType}</p>
+            {post.postType === "song" && post.content.artistName && (
+              <p className="text-gray-300">{post.content.artistName}</p>
+            )}
+            {post.postType === "game" && post.content.developerName && (
+              <p className="text-gray-300">{post.content.developerName}</p>
+            )}
             {post.postType === "ringtone" && post.content.mp3Url && (
               <button
                 onClick={() => new Audio(post.content.mp3Url).play()}
-                className="absolute bottom-2 right-2 bg-gray-900 text-white p-2 rounded-full hover:bg-gray-600 focus:outline-none"
+                className="mt-2 bg-gray-900 text-white p-2 rounded-full hover:bg-gray-700 focus:outline-none"
               >
                 ▶️
               </button>
             )}
           </div>
-          <h3 className="text-xl mb-2">{post.title}</h3>
-          <p className="text-gray-400 capitalize">{post.postType}</p>
-          {post.postType === "song" && post.content.artistName && (
-            <p className="text-gray-400">{post.content.artistName}</p>
-          )}
-          {post.postType === "game" && post.content.developerName && (
-            <p className="text-gray-400">{post.content.developerName}</p>
-          )}
         </div>
       ))}
     </main>

@@ -1,3 +1,61 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* styles/globals.css */
+.group {
+  position: relative;
+  overflow: hidden;
+}
+
+.group img {
+  transition: transform 0.3s ease;
+}
+
+.group:hover img {
+  transform: scale(1.05);
+}
+
+.group .overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.group:hover .overlay {
+  opacity: 1;
+}
+
+.group .overlay h3 {
+  color: #fff;
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.group .overlay p {
+  color: #ccc;
+}
+
+.group .overlay button {
+  background: #333;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  margin-top: 0.5rem;
+  transition: background 0.3s ease;
+}
+
+.group .overlay button:hover {
+  background: #555;
+}
