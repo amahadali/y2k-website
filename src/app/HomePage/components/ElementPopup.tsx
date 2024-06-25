@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useSession } from "next-auth/react";
 
 interface ElementPopupProps {
   closeElementPopup: () => void;
@@ -16,6 +17,7 @@ const ElementPopup: React.FC<ElementPopupProps> = ({
   const [developerName, setDeveloperName] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const { data: session } = useSession();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -30,41 +32,28 @@ const ElementPopup: React.FC<ElementPopupProps> = ({
   };
 
   const handleUpload = async () => {
-    if (!file || !imageFile) return;
+    if (!imageFile) return;
 
-    const fileUrl = URL.createObjectURL(file); // Temporary URL for local testing
-    const imageFileUrl = URL.createObjectURL(imageFile); // Temporary URL for local testing
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("postType", category);
+    formData.append("imageFile", imageFile);
 
-    let additionalFields: { [key: string]: string } = {};
-
-    if (category === "song") {
-      additionalFields = { artistName };
-    } else if (category === "game") {
-      additionalFields = { developerName };
+    if (category === "song" || category === "ringtone") {
+      if (!file) return;
+      formData.append("file", file);
     }
 
-    const data = {
-      postType: category,
-      title,
-      additionalFields,
-      fileUrl,
-      imageFileUrl,
-    };
+    if (category === "song") {
+      formData.append("artistName", artistName);
+    } else if (category === "game") {
+      formData.append("developerName", developerName);
+    }
 
     try {
-      const token = document.cookie.replace(
-        /(?:(?:^|.*;\s*)token\s*=\s*([^;]*).*$)|^.*$/,
-        "$1"
-      );
-      console.log("Token included in request:", token); // Log token to verify
-
       const response = await fetch("/api/upload/upload", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(data),
+        body: formData,
       });
 
       if (!response.ok) {
@@ -171,7 +160,7 @@ const ElementPopup: React.FC<ElementPopupProps> = ({
             <input
               type="file"
               className="w-full px-4 py-2 bg-gray-700 text-white rounded-md focus:outline-none"
-              onChange={handleFileChange}
+              onChange={handleImageFileChange}
             />
           </div>
         )}
