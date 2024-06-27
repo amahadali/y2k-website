@@ -1,4 +1,3 @@
-//import "../../globals.css";
 import React, { useEffect, useState } from "react";
 
 interface Post {
@@ -40,6 +39,21 @@ const Feed = () => {
     fetchPosts();
   }, []);
 
+  const handleDelete = async (postId: string) => {
+    try {
+      const response = await fetch(`/api/posts/${postId}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        throw new Error("Failed to delete post");
+      }
+      setPosts(posts.filter((post) => post._id !== postId));
+    } catch (error) {
+      console.error(error);
+      alert("Error deleting post");
+    }
+  };
+
   if (loading) return <p className="p-4">Loading...</p>;
   if (error) return <p className="p-4">{error}</p>;
 
@@ -72,6 +86,12 @@ const Feed = () => {
                 ▶️
               </button>
             )}
+            <button
+              onClick={() => handleDelete(post._id)}
+              className="mt-2 bg-red-600 text-white p-2 rounded-full hover:bg-red-800 focus:outline-none"
+            >
+              Delete
+            </button>
           </div>
         </div>
       ))}
