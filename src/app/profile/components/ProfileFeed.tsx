@@ -1,7 +1,8 @@
-// src/app/HomePage/components/Feed.tsx
+// src/app/profile/components/ProfileFeed.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface Post {
   _id: string;
@@ -16,11 +17,11 @@ interface Post {
   datePosted: string;
 }
 
-interface FeedProps {
-  username?: string;
+interface ProfileFeedProps {
+  username: string;
 }
 
-const Feed: React.FC<FeedProps> = ({ username }) => {
+const ProfileFeed: React.FC<ProfileFeedProps> = ({ username }) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -28,8 +29,7 @@ const Feed: React.FC<FeedProps> = ({ username }) => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const query = username ? `?username=${username}` : "";
-        const response = await fetch(`/api/posts${query}`);
+        const response = await fetch(`/api/posts?username=${username}`);
         const data = await response.json();
 
         if (data.success) {
@@ -108,4 +108,4 @@ const Feed: React.FC<FeedProps> = ({ username }) => {
   );
 };
 
-export default Feed;
+export default ProfileFeed;

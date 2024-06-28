@@ -1,6 +1,7 @@
 // pages/api/posts/index.js
 import dbConnect from "../../../../lib/dbConnect";
-import Post from "../../../../models/Posts"; // Ensure the casing matches the file name
+import Post from "../../../../models/Posts";
+import User from "../../../../models/User";
 import Game from "../../../../models/Game";
 import Song from "../../../../models/Song";
 import Ringtone from "../../../../models/Ringtone";
@@ -15,13 +16,22 @@ const modelMapping = {
 
 export default async function handler(req, res) {
   const { method } = req;
+  const { username } = req.query;
 
   await dbConnect();
 
   switch (method) {
     case "GET":
       try {
-        const posts = await Post.find({}).lean();
+        const query = {};
+        if (username) {
+          const user = await User.findOne({ username });
+          if (user) {
+            query.user = user._id;
+          }
+        }
+
+        const posts = await Post.find(query).lean();
         const populatedPosts = await Promise.all(
           posts.map(async (post) => {
             const model = modelMapping[post.postType];

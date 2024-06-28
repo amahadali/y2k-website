@@ -106,7 +106,10 @@ const Navbar: React.FC<NavbarProps> = ({
                 <p className="text-white">
                   {session?.user?.name || "Loading..."}
                 </p>
-                <a href="#" className="text-blue-500 text-sm">
+                <a
+                  href={`/profile/${session?.user?.name}`}
+                  className="text-blue-500 text-sm"
+                >
                   View Profile
                 </a>
               </div>
