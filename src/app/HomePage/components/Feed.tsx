@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 
 interface Post {
   _id: string;
@@ -17,10 +18,12 @@ interface Post {
 }
 
 interface FeedProps {
+  showDeleteButton?: boolean;
   username?: string;
 }
 
-const Feed: React.FC<FeedProps> = ({ username }) => {
+const Feed: React.FC<FeedProps> = ({ showDeleteButton = false, username }) => {
+  const { data: session } = useSession();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -95,12 +98,14 @@ const Feed: React.FC<FeedProps> = ({ username }) => {
                 ▶️
               </button>
             )}
-            <button
-              onClick={() => handleDelete(post._id)}
-              className="mt-2 bg-red-600 text-white p-2 rounded-full hover:bg-red-800 focus:outline-none"
-            >
-              Delete
-            </button>
+            {showDeleteButton && session?.user?.username === username && (
+              <button
+                onClick={() => handleDelete(post._id)}
+                className="mt-2 bg-red-600 text-white p-2 rounded-full hover:bg-red-800 focus:outline-none"
+              >
+                Delete
+              </button>
+            )}
           </div>
         </div>
       ))}

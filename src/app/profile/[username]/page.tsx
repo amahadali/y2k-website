@@ -3,6 +3,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 import Layout from "../../components/Navigation";
 import Feed from "../../HomePage/components/Feed";
 
@@ -14,12 +15,14 @@ interface User {
 }
 
 const ProfilePage: React.FC = () => {
+  const { data: session, status } = useSession();
+  const loadingSession = status === "loading";
   const params = useParams();
   const username = Array.isArray(params?.username)
     ? params.username[0]
     : params?.username;
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loadingUser, setLoadingUser] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -32,7 +35,7 @@ const ProfilePage: React.FC = () => {
       } catch (error) {
         console.error("Error fetching user:", error);
       } finally {
-        setLoading(false);
+        setLoadingUser(false);
       }
     };
 
@@ -41,8 +44,12 @@ const ProfilePage: React.FC = () => {
     }
   }, [username]);
 
-  if (loading) {
+  if (loadingSession || loadingUser) {
     return <div>Loading...</div>;
+  }
+
+  if (!session) {
+    return null; // or redirect to login page
   }
 
   if (!user) {
@@ -73,7 +80,7 @@ const ProfilePage: React.FC = () => {
             </p>
           </div>
         </div>
-        <Feed username={user.username} />
+        <Feed username={user.username} showDeleteButton={true} />
       </div>
     </Layout>
   );
