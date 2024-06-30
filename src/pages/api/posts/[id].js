@@ -88,7 +88,7 @@ export default async function handler(req, res) {
       break;
     default:
       res.setHeader("Allow", ["DELETE"]);
-      res.status(405).end(`Method ${req.method} Not Allowed`);
+      res.status(405).end(`Method ${method} Not Allowed`);
       break;
   }
 }

@@ -1,4 +1,3 @@
-// pages/api/posts/index.js
 import dbConnect from "../../../../lib/dbConnect";
 import Post from "../../../../models/Posts";
 import User from "../../../../models/User";
@@ -16,33 +15,49 @@ const modelMapping = {
 
 export default async function handler(req, res) {
   const { method } = req;
-  const { username } = req.query;
+  const { username, contentId } = req.query;
 
   await dbConnect();
 
   switch (method) {
     case "GET":
-      try {
-        const query = {};
-        if (username) {
-          const user = await User.findOne({ username });
-          if (user) {
-            query.user = user._id;
+      if (contentId) {
+        // Fetch post by contentId
+        try {
+          const posts = await Post.find({ contentId }).lean();
+          if (!posts || posts.length === 0) {
+            return res
+              .status(404)
+              .json({ success: false, message: "Post not found" });
           }
+          res.status(200).json({ success: true, data: posts });
+        } catch (error) {
+          res.status(400).json({ success: false, message: error.message });
         }
+      } else {
+        // Fetch posts by username or all posts
+        try {
+          const query = {};
+          if (username) {
+            const user = await User.findOne({ username });
+            if (user) {
+              query.user = user._id;
+            }
+          }
 
-        const posts = await Post.find(query).lean();
-        const populatedPosts = await Promise.all(
-          posts.map(async (post) => {
-            const model = modelMapping[post.postType];
-            const content = await model.findById(post.contentId).lean();
-            return { ...post, content };
-          })
-        );
-        res.status(200).json({ success: true, data: populatedPosts });
-      } catch (error) {
-        console.error("Error fetching posts:", error);
-        res.status(400).json({ success: false, error: error.message });
+          const posts = await Post.find(query).lean();
+          const populatedPosts = await Promise.all(
+            posts.map(async (post) => {
+              const model = modelMapping[post.postType];
+              const content = await model.findById(post.contentId).lean();
+              return { ...post, content };
+            })
+          );
+          res.status(200).json({ success: true, data: populatedPosts });
+        } catch (error) {
+          console.error("Error fetching posts:", error);
+          res.status(400).json({ success: false, error: error.message });
+        }
       }
       break;
     case "POST":
