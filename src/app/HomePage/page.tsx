@@ -1,18 +1,13 @@
 // src/app/HomePage/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import Navbar from "./components/Navbar";
-import Feed from "./components/Feed";
-import ClusterPopup from "./components/ClusterPopup";
-import ElementPopup from "./components/ElementPopup";
+import Feed from "../components/Feed/Feed";
+import Layout from "../components/Nav/Navigation";
 
 export default function HomePage() {
-  const [showClusterPopup, setShowClusterPopup] = useState(false);
-  const [showElementPopup, setShowElementPopup] = useState(false);
-  const [category, setCategory] = useState("");
   const { data: session, status } = useSession();
   const loading = status === "loading";
   const router = useRouter();
@@ -23,15 +18,6 @@ export default function HomePage() {
     }
   }, [loading, session, router]);
 
-  const openClusterPopup = () => setShowClusterPopup(true);
-  const closeClusterPopup = () => setShowClusterPopup(false);
-
-  const openElementPopup = () => setShowElementPopup(true);
-  const closeElementPopup = () => {
-    setShowElementPopup(false);
-    setCategory("");
-  };
-
   if (loading) {
     return <div>Loading...</div>; // or a loading spinner
   }
@@ -41,11 +27,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <Navbar
-        openClusterPopup={openClusterPopup}
-        openElementPopup={openElementPopup}
-      />
+    <Layout>
       <nav className="flex justify-center space-x-4 mt-8">
         <button className="text-white text-lg px-4 py-2 bg-gray-800 rounded-md cursor-pointer">
           Featured
@@ -55,16 +37,6 @@ export default function HomePage() {
         </button>
       </nav>
       <Feed />
-      {showClusterPopup && (
-        <ClusterPopup closeClusterPopup={closeClusterPopup} />
-      )}
-      {showElementPopup && (
-        <ElementPopup
-          closeElementPopup={closeElementPopup}
-          category={category}
-          setCategory={setCategory}
-        />
-      )}
-    </div>
+    </Layout>
   );
 }

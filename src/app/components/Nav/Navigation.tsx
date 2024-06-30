@@ -1,11 +1,11 @@
-// src/components/Layout.tsx
+// src/Nav/Navigation.tsx
 "use client";
 
 import React, { useState } from "react";
 import { useSession } from "next-auth/react";
-import Navbar from "../HomePage/components/Navbar";
-import ElementPopup from "../HomePage/components/ElementPopup";
-import ClusterPopup from "../HomePage/components/ClusterPopup";
+import Navbar from "./components/Navbar";
+import ElementPopup from "./components/ElementPopup";
+import ClusterPopup from "./components/ClusterPopup";
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isElementPopupOpen, setIsElementPopupOpen] = useState(false);

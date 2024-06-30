@@ -3,8 +3,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import Layout from "../../components/Navigation";
-import Feed from "../../HomePage/components/Feed";
+import Layout from "../../components/Nav/Navigation";
+import Feed from "../../components/Feed/Feed";
 
 interface User {
   username: string;
