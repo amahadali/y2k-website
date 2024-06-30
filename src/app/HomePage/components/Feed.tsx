@@ -72,6 +72,13 @@ const Feed: React.FC<FeedProps> = ({ username }) => {
     }
   };
 
+  const handlePostClick = () => {
+    if (currentAudio) {
+      currentAudio.pause();
+      setCurrentAudio(null);
+    }
+  };
+
   if (loading) return <p className="p-4">Loading...</p>;
   if (error) return <p className="p-4">{error}</p>;
   if (!posts.length) return <p className="p-4">No posts available</p>;
@@ -94,6 +101,7 @@ const Feed: React.FC<FeedProps> = ({ username }) => {
           <Link
             key={post._id}
             href={`/posts/${post.postType}s/${post.contentId}`}
+            onClick={handlePostClick}
           >
             <div
               className="relative group overflow-hidden rounded-lg shadow-lg cursor-pointer mb-4"
