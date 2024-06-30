@@ -1,5 +1,9 @@
 import React, { useState } from "react";
 import { useSession } from "next-auth/react";
+import CategorySelect from "./ElementPopup/CategorySelect";
+import FileUpload from "./ElementPopup/FileUpload";
+import ImageUpload from "./ElementPopup/ImageUpload";
+import TextInput from "./ElementPopup/TextInput";
 
 interface ElementPopupProps {
   closeElementPopup: () => void;
@@ -19,17 +23,13 @@ const ElementPopup: React.FC<ElementPopupProps> = ({
   const [imageFile, setImageFile] = useState<File | null>(null);
   const { data: session } = useSession();
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
-    }
-  };
-
-  const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setImageFile(e.target.files[0]);
-    }
-  };
+  const handleFileChange =
+    (setter: React.Dispatch<React.SetStateAction<File | null>>) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files && e.target.files.length > 0) {
+        setter(e.target.files[0]);
+      }
+    };
 
   const handleUpload = async () => {
     if (!imageFile) return;
@@ -39,8 +39,7 @@ const ElementPopup: React.FC<ElementPopupProps> = ({
     formData.append("postType", category);
     formData.append("imageFile", imageFile);
 
-    if (category === "song" || category === "ringtone") {
-      if (!file) return;
+    if ((category === "song" || category === "ringtone") && file) {
       formData.append("file", file);
     }
 
@@ -72,119 +71,52 @@ const ElementPopup: React.FC<ElementPopupProps> = ({
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
       <div className="bg-gray-800 rounded-lg p-8 shadow-lg w-1/3">
         <h2 className="text-2xl mb-4">Create Element</h2>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-400 mb-2">
-            Select Category
-          </label>
-          <select
-            className="w-full px-4 py-2 bg-gray-700 text-white rounded-md focus:outline-none"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          >
-            <option value="">Select Category</option>
-            <option value="song">Song</option>
-            <option value="ringtone">Ringtone</option>
-            <option value="wallpaper">Wallpaper</option>
-            <option value="game">Game</option>
-          </select>
-        </div>
+        <CategorySelect category={category} setCategory={setCategory} />
         {category && (
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-400 mb-2">
-              Name
-            </label>
-            <input
-              type="text"
-              placeholder={`Enter ${category} name...`}
-              className="w-full px-4 py-2 bg-gray-700 text-white rounded-md focus:outline-none"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-          </div>
+          <TextInput
+            label="Name"
+            placeholder={`Enter ${category} name...`}
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
         )}
         {category === "song" && (
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-400 mb-2">
-              Artist Name
-            </label>
-            <input
-              type="text"
+          <>
+            <TextInput
+              label="Artist Name"
               placeholder="Enter artist name..."
-              className="w-full px-4 py-2 bg-gray-700 text-white rounded-md focus:outline-none"
               value={artistName}
               onChange={(e) => setArtistName(e.target.value)}
             />
-            <label className="block text-sm font-medium text-gray-400 mb-2 mt-4">
-              Upload MP3
-            </label>
-            <input
-              type="file"
-              className="w-full px-4 py-2 bg-gray-700 text-white rounded-md focus:outline-none"
-              onChange={handleFileChange}
+            <FileUpload
+              label="Upload MP3"
+              onFileChange={handleFileChange(setFile)}
             />
-            <label className="block text-sm font-medium text-gray-400 mb-2 mt-4">
-              Upload Image
-            </label>
-            <input
-              type="file"
-              className="w-full px-4 py-2 bg-gray-700 text-white rounded-md focus:outline-none"
-              onChange={handleImageFileChange}
-            />
-          </div>
+            <ImageUpload onImageChange={handleFileChange(setImageFile)} />
+          </>
         )}
         {category === "ringtone" && (
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-400 mb-2">
-              Upload Ringtone
-            </label>
-            <input
-              type="file"
-              className="w-full px-4 py-2 bg-gray-700 text-white rounded-md focus:outline-none"
-              onChange={handleFileChange}
+          <>
+            <FileUpload
+              label="Upload Ringtone"
+              onFileChange={handleFileChange(setFile)}
             />
-            <label className="block text-sm font-medium text-gray-400 mb-2 mt-4">
-              Upload Image
-            </label>
-            <input
-              type="file"
-              className="w-full px-4 py-2 bg-gray-700 text-white rounded-md focus:outline-none"
-              onChange={handleImageFileChange}
-            />
-          </div>
+            <ImageUpload onImageChange={handleFileChange(setImageFile)} />
+          </>
         )}
         {category === "wallpaper" && (
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-400 mb-2">
-              Upload Wallpaper
-            </label>
-            <input
-              type="file"
-              className="w-full px-4 py-2 bg-gray-700 text-white rounded-md focus:outline-none"
-              onChange={handleImageFileChange}
-            />
-          </div>
+          <ImageUpload onImageChange={handleFileChange(setImageFile)} />
         )}
         {category === "game" && (
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-400 mb-2">
-              Developer Name
-            </label>
-            <input
-              type="text"
+          <>
+            <TextInput
+              label="Developer Name"
               placeholder="Enter developer name..."
-              className="w-full px-4 py-2 bg-gray-700 text-white rounded-md focus:outline-none"
               value={developerName}
               onChange={(e) => setDeveloperName(e.target.value)}
             />
-            <label className="block text-sm font-medium text-gray-400 mb-2 mt-4">
-              Upload Image
-            </label>
-            <input
-              type="file"
-              className="w-full px-4 py-2 bg-gray-700 text-white rounded-md focus:outline-none"
-              onChange={handleImageFileChange}
-            />
-          </div>
+            <ImageUpload onImageChange={handleFileChange(setImageFile)} />
+          </>
         )}
         <div className="flex justify-end mt-4">
           <button
