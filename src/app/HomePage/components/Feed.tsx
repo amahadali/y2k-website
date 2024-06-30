@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import Masonry from "react-masonry-css";
 
 interface Post {
   _id: string;
@@ -27,7 +28,9 @@ const Feed: React.FC<FeedProps> = ({ username }) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const audioRef = React.useRef<HTMLAudioElement | null>(null);
+  const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(
+    null
+  );
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -51,17 +54,21 @@ const Feed: React.FC<FeedProps> = ({ username }) => {
     fetchPosts();
   }, [username]);
 
-  const handleMouseEnter = (mp3Url?: string) => {
-    if (audioRef.current && mp3Url) {
-      audioRef.current.src = mp3Url;
-      audioRef.current.play();
+  const handleMouseEnter = (mp3Url: string) => {
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
     }
+    const audio = new Audio(mp3Url);
+    audio.play();
+    setCurrentAudio(audio);
   };
 
   const handleMouseLeave = () => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.src = "";
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+      setCurrentAudio(null);
     }
   };
 
@@ -69,37 +76,49 @@ const Feed: React.FC<FeedProps> = ({ username }) => {
   if (error) return <p className="p-4">{error}</p>;
   if (!posts.length) return <p className="p-4">No posts available</p>;
 
+  const breakpointColumnsObj = {
+    default: 4,
+    1100: 3,
+    700: 2,
+    500: 1,
+  };
+
   return (
-    <main className="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8">
-      <audio ref={audioRef} />
-      {posts.map((post) => (
-        <Link
-          key={post._id}
-          href={`/posts/${post.postType}s/${post.contentId}`}
-        >
-          <div
-            className="relative group overflow-hidden rounded-lg shadow-lg cursor-pointer"
-            onMouseEnter={() => handleMouseEnter(post.content.mp3Url)}
-            onMouseLeave={handleMouseLeave}
+    <main className="p-4 mt-8">
+      <Masonry
+        breakpointCols={breakpointColumnsObj}
+        className="my-masonry-grid"
+        columnClassName="my-masonry-grid_column"
+      >
+        {posts.map((post) => (
+          <Link
+            key={post._id}
+            href={`/posts/${post.postType}s/${post.contentId}`}
           >
-            <img
-              src={post.imageUrl}
-              alt={post.title}
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <h3 className="text-white text-lg font-bold">{post.title}</h3>
-              <p className="text-gray-300 capitalize">{post.postType}</p>
-              {post.postType === "song" && post.content.artistName && (
-                <p className="text-gray-300">{post.content.artistName}</p>
-              )}
-              {post.postType === "game" && post.content.developerName && (
-                <p className="text-gray-300">{post.content.developerName}</p>
-              )}
+            <div
+              className="relative group overflow-hidden rounded-lg shadow-lg cursor-pointer mb-4"
+              onMouseEnter={() => handleMouseEnter(post.content.mp3Url!)}
+              onMouseLeave={handleMouseLeave}
+            >
+              <img
+                src={post.imageUrl}
+                alt={post.title}
+                className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <h3 className="text-white text-lg font-bold">{post.title}</h3>
+                <p className="text-gray-300 capitalize">{post.postType}</p>
+                {post.postType === "songs" && post.content.artistName && (
+                  <p className="text-gray-300">{post.content.artistName}</p>
+                )}
+                {post.postType === "games" && post.content.developerName && (
+                  <p className="text-gray-300">{post.content.developerName}</p>
+                )}
+              </div>
             </div>
-          </div>
-        </Link>
-      ))}
+          </Link>
+        ))}
+      </Masonry>
     </main>
   );
 };
