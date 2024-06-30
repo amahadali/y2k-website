@@ -9,7 +9,7 @@ interface Post {
   title: string;
   imageUrl: string;
   postType: string;
-  contentId: string; // Adjusted to include contentId
+  contentId: string;
   content: {
     artistName?: string;
     developerName?: string;
@@ -19,15 +19,15 @@ interface Post {
 }
 
 interface FeedProps {
-  showDeleteButton?: boolean;
   username?: string;
 }
 
-const Feed: React.FC<FeedProps> = ({ showDeleteButton = false, username }) => {
+const Feed: React.FC<FeedProps> = ({ username }) => {
   const { data: session } = useSession();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const audioRef = React.useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -51,18 +51,37 @@ const Feed: React.FC<FeedProps> = ({ showDeleteButton = false, username }) => {
     fetchPosts();
   }, [username]);
 
+  const handleMouseEnter = (mp3Url?: string) => {
+    if (audioRef.current && mp3Url) {
+      audioRef.current.src = mp3Url;
+      audioRef.current.play();
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.src = "";
+    }
+  };
+
   if (loading) return <p className="p-4">Loading...</p>;
   if (error) return <p className="p-4">{error}</p>;
   if (!posts.length) return <p className="p-4">No posts available</p>;
 
   return (
     <main className="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8">
+      <audio ref={audioRef} />
       {posts.map((post) => (
         <Link
           key={post._id}
           href={`/posts/${post.postType}s/${post.contentId}`}
         >
-          <div className="relative group overflow-hidden rounded-lg shadow-lg cursor-pointer">
+          <div
+            className="relative group overflow-hidden rounded-lg shadow-lg cursor-pointer"
+            onMouseEnter={() => handleMouseEnter(post.content.mp3Url)}
+            onMouseLeave={handleMouseLeave}
+          >
             <img
               src={post.imageUrl}
               alt={post.title}
@@ -71,19 +90,11 @@ const Feed: React.FC<FeedProps> = ({ showDeleteButton = false, username }) => {
             <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               <h3 className="text-white text-lg font-bold">{post.title}</h3>
               <p className="text-gray-300 capitalize">{post.postType}</p>
-              {post.postType === "songs" && post.content.artistName && (
+              {post.postType === "song" && post.content.artistName && (
                 <p className="text-gray-300">{post.content.artistName}</p>
               )}
-              {post.postType === "games" && post.content.developerName && (
+              {post.postType === "game" && post.content.developerName && (
                 <p className="text-gray-300">{post.content.developerName}</p>
-              )}
-              {post.postType === "ringtones" && post.content.mp3Url && (
-                <button
-                  onClick={() => new Audio(post.content.mp3Url).play()}
-                  className="mt-2 bg-gray-900 text-white p-2 rounded-full hover:bg-gray-700 focus:outline-none"
-                >
-                  ▶️
-                </button>
               )}
             </div>
           </div>

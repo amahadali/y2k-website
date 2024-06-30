@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -35,6 +35,7 @@ const Navbar: React.FC<NavbarProps> = ({
           width={50}
           height={50}
           className="inline-block"
+          onClick={() => router.push("/HomePage")}
         />
         <div className="relative">
           <button
@@ -45,7 +46,10 @@ const Navbar: React.FC<NavbarProps> = ({
           </button>
           {dropdownOpen && (
             <div className="absolute left-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg py-2 z-20">
-              <button className="block px-4 py-2 text-sm text-white hover:bg-gray-700 cursor-pointer">
+              <button
+                className="block px-4 py-2 text-sm text-white hover:bg-gray-700 cursor-pointer"
+                onClick={() => router.push("/HomePage")}
+              >
                 Home
               </button>
               <button className="block px-4 py-2 text-sm text-white hover:bg-gray-700 cursor-pointer">

@@ -1,4 +1,3 @@
-// src/app/profile/[username]/page.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -80,7 +79,7 @@ const ProfilePage: React.FC = () => {
             </p>
           </div>
         </div>
-        <Feed username={user.username} showDeleteButton={true} />
+        <Feed username={user.username} />
       </div>
     </Layout>
   );
