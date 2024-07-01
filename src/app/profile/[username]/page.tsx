@@ -1,5 +1,3 @@
-// src/pages/profile/[username].tsx
-
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -36,26 +34,24 @@ const ProfilePage: React.FC = () => {
   }, [session, status, router]);
 
   useEffect(() => {
-    if (session) {
-      const fetchUser = async () => {
-        try {
-          const response = await fetch(`/api/users/${username}`);
-          const data = await response.json();
-          if (data.success) {
-            setUser(data.data);
-          }
-        } catch (error) {
-          console.error("Error fetching user:", error);
-        } finally {
-          setLoadingUser(false);
+    const fetchUser = async () => {
+      try {
+        const response = await fetch(`/api/users/${username}`);
+        const data = await response.json();
+        if (data.success) {
+          setUser(data.data);
         }
-      };
-
-      if (username) {
-        fetchUser();
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      } finally {
+        setLoadingUser(false);
       }
+    };
+
+    if (username) {
+      fetchUser();
     }
-  }, [username, session]);
+  }, [username]);
 
   if (loadingSession || loadingUser) {
     return <div>Loading...</div>;
@@ -107,7 +103,11 @@ const ProfilePage: React.FC = () => {
             Libraries
           </button>
         </div>
-        {view === "posts" ? <Feed username={user.username} /> : <LibraryFeed />}
+        {view === "posts" ? (
+          <Feed username={user.username} />
+        ) : (
+          <LibraryFeed username={user.username} />
+        )}
       </div>
     </Layout>
   );
