@@ -65,7 +65,7 @@ const LibraryFeed: React.FC<LibraryFeedProps> = ({ username }) => {
                 )}
               </div>
               <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <p className="text-white">{library.description}</p>
+                <p className="text-white">{library.name}</p>
               </div>
             </div>
           </Link>

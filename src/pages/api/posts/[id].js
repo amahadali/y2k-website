@@ -6,6 +6,7 @@ import Song from "../../../../models/Song";
 import Wallpaper from "../../../../models/Wallpaper";
 import { s3Client } from "../../../../lib/awsConfig";
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { getToken } from "next-auth/jwt";
 
 const modelMapping = {
   game: Game,
@@ -45,11 +46,28 @@ export default async function handler(req, res) {
   switch (method) {
     case "DELETE":
       try {
+        const token = await getToken({
+          req,
+          secret: process.env.NEXTAUTH_SECRET,
+        });
+        if (!token) {
+          return res.status(401).json({ message: "Authentication required" });
+        }
+
+        const userId = token.sub;
+
         const post = await Post.findById(id);
         if (!post) {
           return res
             .status(404)
             .json({ success: false, message: "Post not found" });
+        }
+
+        // Ensure the user deleting the post is the same as the user who created it
+        if (post.user.toString() !== userId) {
+          return res
+            .status(403)
+            .json({ success: false, message: "Unauthorized" });
         }
 
         const model = modelMapping[post.postType];

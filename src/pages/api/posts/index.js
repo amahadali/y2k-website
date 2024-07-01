@@ -5,6 +5,7 @@ import Game from "../../../../models/Game";
 import Song from "../../../../models/Song";
 import Ringtone from "../../../../models/Ringtone";
 import Wallpaper from "../../../../models/Wallpaper";
+import { getToken } from "next-auth/jwt";
 
 const modelMapping = {
   game: Game,
@@ -62,6 +63,23 @@ export default async function handler(req, res) {
       break;
     case "POST":
       try {
+        const token = await getToken({
+          req,
+          secret: process.env.NEXTAUTH_SECRET,
+        });
+        if (!token) {
+          return res.status(401).json({ message: "Authentication required" });
+        }
+
+        const userId = token.sub;
+
+        // Ensure the user in the request body is the authenticated user
+        if (req.body.user !== userId) {
+          return res
+            .status(403)
+            .json({ success: false, message: "Unauthorized" });
+        }
+
         const post = await Post.create(req.body);
         res.status(201).json({ success: true, data: post });
       } catch (error) {
