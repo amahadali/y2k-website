@@ -1,3 +1,4 @@
+// src/pages/api/libraries/index.js
 import dbConnect from "../../../../lib/dbConnect";
 import Library from "../../../../models/Library";
 import { getToken } from "next-auth/jwt";
