@@ -3,6 +3,7 @@
 import React, { useEffect, useState, ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import LibraryPopup from "./LibraryPopup"; // Ensure this path is correct
 
 interface PostDetailsProps {
   fetchUrl: string;
@@ -21,6 +22,7 @@ const PostDetails: React.FC<PostDetailsProps> = ({
   const [postId, setPostId] = useState<string | null>(null);
   const [postUserId, setPostUserId] = useState<string | null>(null); // State to store post user ID
   const [menuOpen, setMenuOpen] = useState(false);
+  const [libraryPopupOpen, setLibraryPopupOpen] = useState(false);
 
   useEffect(() => {
     if (status === "loading") return; // Do nothing while loading
@@ -113,10 +115,22 @@ const PostDetails: React.FC<PostDetailsProps> = ({
                   Delete
                 </button>
               )}
+              <button
+                onClick={() => setLibraryPopupOpen(true)}
+                className="block px-4 py-2"
+              >
+                Add to Library
+              </button>
             </div>
           </div>
         )}
       </div>
+      {libraryPopupOpen && (
+        <LibraryPopup
+          closeLibraryPopup={() => setLibraryPopupOpen(false)}
+          postId={postId as string}
+        />
+      )}
     </div>
   );
 };

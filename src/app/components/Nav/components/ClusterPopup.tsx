@@ -22,7 +22,7 @@ const ClusterPopup: React.FC<ClusterPopupProps> = ({ closeClusterPopup }) => {
     };
 
     try {
-      const response = await fetch("/api/libraries/create", {
+      const response = await fetch("/api/libraries", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
