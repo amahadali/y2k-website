@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Layout from "../../components/Nav/Navigation";
 import Feed from "../../components/Feed/Feed";
@@ -15,6 +15,7 @@ interface User {
 
 const ProfilePage: React.FC = () => {
   const { data: session, status } = useSession();
+  const router = useRouter();
   const loadingSession = status === "loading";
   const params = useParams();
   const username = Array.isArray(params?.username)
@@ -24,31 +25,36 @@ const ProfilePage: React.FC = () => {
   const [loadingUser, setLoadingUser] = useState<boolean>(true);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await fetch(`/api/users/${username}`);
-        const data = await response.json();
-        if (data.success) {
-          setUser(data.data);
-        }
-      } catch (error) {
-        console.error("Error fetching user:", error);
-      } finally {
-        setLoadingUser(false);
-      }
-    };
-
-    if (username) {
-      fetchUser();
+    if (status === "loading") return; // Do nothing while loading
+    if (!session) {
+      router.push("/Login"); // Redirect to login page if not authenticated
     }
-  }, [username]);
+  }, [session, status, router]);
+
+  useEffect(() => {
+    if (session) {
+      const fetchUser = async () => {
+        try {
+          const response = await fetch(`/api/users/${username}`);
+          const data = await response.json();
+          if (data.success) {
+            setUser(data.data);
+          }
+        } catch (error) {
+          console.error("Error fetching user:", error);
+        } finally {
+          setLoadingUser(false);
+        }
+      };
+
+      if (username) {
+        fetchUser();
+      }
+    }
+  }, [username, session]);
 
   if (loadingSession || loadingUser) {
     return <div>Loading...</div>;
-  }
-
-  if (!session) {
-    return null; // or redirect to login page
   }
 
   if (!user) {
