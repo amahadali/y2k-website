@@ -55,13 +55,7 @@ export default async function handler(req, res) {
     }
   } else if (req.method === "GET") {
     try {
-      const library = await Library.findById(id).populate({
-        path: "posts",
-        populate: {
-          path: "contentId",
-          model: Post,
-        },
-      });
+      const library = await Library.findById(id).populate("posts");
       if (!library) {
         return res
           .status(404)

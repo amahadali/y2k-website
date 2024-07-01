@@ -1,3 +1,5 @@
+// src/pages/profile/[username].tsx
+
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -5,6 +7,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Layout from "../../components/Nav/Navigation";
 import Feed from "../../components/Feed/Feed";
+import LibraryFeed from "../../components/Feed/LibraryFeed";
 
 interface User {
   username: string;
@@ -23,6 +26,7 @@ const ProfilePage: React.FC = () => {
     : params?.username;
   const [user, setUser] = useState<User | null>(null);
   const [loadingUser, setLoadingUser] = useState<boolean>(true);
+  const [view, setView] = useState<"posts" | "libraries">("posts");
 
   useEffect(() => {
     if (status === "loading") return; // Do nothing while loading
@@ -85,7 +89,25 @@ const ProfilePage: React.FC = () => {
             </p>
           </div>
         </div>
-        <Feed username={user.username} />
+        <div className="flex space-x-4 mt-4">
+          <button
+            onClick={() => setView("posts")}
+            className={`px-4 py-2 ${
+              view === "posts" ? "bg-gray-800" : "bg-gray-700"
+            } rounded-md`}
+          >
+            Posts
+          </button>
+          <button
+            onClick={() => setView("libraries")}
+            className={`px-4 py-2 ${
+              view === "libraries" ? "bg-gray-800" : "bg-gray-700"
+            } rounded-md`}
+          >
+            Libraries
+          </button>
+        </div>
+        {view === "posts" ? <Feed username={user.username} /> : <LibraryFeed />}
       </div>
     </Layout>
   );

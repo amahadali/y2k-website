@@ -11,7 +11,7 @@ interface Post {
   imageUrl: string;
   postType: string;
   contentId: string;
-  content: {
+  content?: {
     artistName?: string;
     developerName?: string;
     mp3Url?: string;
@@ -21,38 +21,41 @@ interface Post {
 
 interface FeedProps {
   username?: string;
+  posts?: Post[];
 }
 
-const Feed: React.FC<FeedProps> = ({ username }) => {
+const Feed: React.FC<FeedProps> = ({ username, posts: initialPosts }) => {
   const { data: session } = useSession();
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [posts, setPosts] = useState<Post[]>(initialPosts || []);
+  const [loading, setLoading] = useState(!initialPosts);
   const [error, setError] = useState<string | null>(null);
   const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(
     null
   );
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const query = username ? `?username=${username}` : "";
-        const response = await fetch(`/api/posts${query}`);
-        const data = await response.json();
+    if (!initialPosts) {
+      const fetchPosts = async () => {
+        try {
+          const query = username ? `?username=${username}` : "";
+          const response = await fetch(`/api/posts${query}`);
+          const data = await response.json();
 
-        if (data.success) {
-          setPosts(data.data);
-        } else {
-          setError(data.message);
+          if (data.success) {
+            setPosts(data.data);
+          } else {
+            setError(data.message);
+          }
+        } catch (error) {
+          setError("Failed to fetch posts");
+        } finally {
+          setLoading(false);
         }
-      } catch (error) {
-        setError("Failed to fetch posts");
-      } finally {
-        setLoading(false);
-      }
-    };
+      };
 
-    fetchPosts();
-  }, [username]);
+      fetchPosts();
+    }
+  }, [username, initialPosts]);
 
   const handleMouseEnter = (mp3Url: string) => {
     if (currentAudio) {
@@ -105,7 +108,7 @@ const Feed: React.FC<FeedProps> = ({ username }) => {
           >
             <div
               className="relative group overflow-hidden rounded-lg shadow-lg cursor-pointer mb-4"
-              onMouseEnter={() => handleMouseEnter(post.content.mp3Url!)}
+              onMouseEnter={() => handleMouseEnter(post.content?.mp3Url!)}
               onMouseLeave={handleMouseLeave}
             >
               <img
@@ -116,10 +119,10 @@ const Feed: React.FC<FeedProps> = ({ username }) => {
               <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <h3 className="text-white text-lg font-bold">{post.title}</h3>
                 <p className="text-gray-300 capitalize">{post.postType}</p>
-                {post.postType === "songs" && post.content.artistName && (
+                {post.postType === "songs" && post.content?.artistName && (
                   <p className="text-gray-300">{post.content.artistName}</p>
                 )}
-                {post.postType === "games" && post.content.developerName && (
+                {post.postType === "games" && post.content?.developerName && (
                   <p className="text-gray-300">{post.content.developerName}</p>
                 )}
               </div>
