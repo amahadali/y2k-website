@@ -45,7 +45,13 @@ const LibraryDetailsPage: React.FC = () => {
   useEffect(() => {
     const fetchLibrary = async () => {
       try {
-        const response = await fetch(`/api/libraries/${libraryId}`);
+        const response = await fetch(`/api/libraries/${libraryId}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id: libraryId }),
+        });
         const data = await response.json();
         if (data.success) {
           setLibrary(data.data);
@@ -110,8 +116,7 @@ const LibraryDetailsPage: React.FC = () => {
             </div>
           )}
         </div>
-        <p className="text-gray-600 mb-4">{library.description}</p>{" "}
-        {/* Added description */}
+        <p className="text-gray-600 mb-4">{library.description}</p>
         <Feed posts={library.posts} />
       </div>
     </Layout>

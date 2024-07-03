@@ -7,7 +7,7 @@ interface Library {
   _id: string;
   name: string;
   description: string;
-  thumbnails: string[]; // Updated to use the thumbnails array
+  thumbnails: string[];
 }
 
 interface LibraryFeedProps {
@@ -22,7 +22,13 @@ const LibraryFeed: React.FC<LibraryFeedProps> = ({ username }) => {
   useEffect(() => {
     const fetchLibraries = async () => {
       try {
-        const response = await fetch(`/api/libraries?username=${username}`);
+        const response = await fetch("/api/libraries", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username }),
+        });
         const data = await response.json();
         if (data.success) {
           setLibraries(data.data);

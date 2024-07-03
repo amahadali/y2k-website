@@ -24,9 +24,16 @@ const LibraryPopup: React.FC<LibraryPopupProps> = ({
   useEffect(() => {
     const fetchLibraries = async () => {
       try {
-        const response = await fetch(`/api/libraries`);
+        const response = await fetch("/api/libraries", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username: session?.user.username }),
+        });
         const data = await response.json();
         if (data.success) {
+          setLibraries(data.data);
           setLibraries(data.data);
         } else {
           setError(data.message);
@@ -39,7 +46,7 @@ const LibraryPopup: React.FC<LibraryPopupProps> = ({
     };
 
     fetchLibraries();
-  }, []);
+  }, [session?.user.username]);
 
   const handleAddToLibrary = async (libraryId: string) => {
     try {

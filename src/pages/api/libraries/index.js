@@ -1,7 +1,6 @@
-// src/pages/api/libraries/index.js
 import dbConnect from "../../../../lib/dbConnect";
 import Library from "../../../../models/Library";
-import User from "../../../../models/User"; // Import the User model
+import User from "../../../../models/User";
 import { getToken } from "next-auth/jwt";
 
 export default async function handler(req, res) {
@@ -12,11 +11,10 @@ export default async function handler(req, res) {
     return res.status(401).json({ message: "Authentication required" });
   }
 
-  const { username } = req.query;
-
   switch (req.method) {
-    case "GET":
+    case "POST":
       try {
+        const { username } = req.body;
         let user;
         if (username) {
           user = await User.findOne({ username });
@@ -45,7 +43,7 @@ export default async function handler(req, res) {
       }
       break;
 
-    case "POST":
+    case "PUT":
       try {
         const userId = token.sub;
         const { name, description, isPrivate } = req.body;
@@ -63,7 +61,7 @@ export default async function handler(req, res) {
       break;
 
     default:
-      res.setHeader("Allow", ["GET", "POST"]);
+      res.setHeader("Allow", ["POST", "PUT"]);
       res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }
