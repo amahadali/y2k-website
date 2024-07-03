@@ -25,7 +25,7 @@ interface FeedProps {
 }
 
 const Feed: React.FC<FeedProps> = ({ username, posts: initialPosts }) => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [posts, setPosts] = useState<Post[]>(initialPosts || []);
   const [loading, setLoading] = useState(!initialPosts);
   const [error, setError] = useState<string | null>(null);
@@ -34,11 +34,17 @@ const Feed: React.FC<FeedProps> = ({ username, posts: initialPosts }) => {
   );
 
   useEffect(() => {
-    if (!initialPosts) {
+    if (!initialPosts && status === "authenticated") {
       const fetchPosts = async () => {
         try {
-          const query = username ? `?username=${username}` : "";
-          const response = await fetch(`/api/posts${query}`);
+          const body = username ? { username } : {};
+          const response = await fetch(`/api/posts`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+          });
           const data = await response.json();
 
           if (data.success) {
@@ -55,7 +61,7 @@ const Feed: React.FC<FeedProps> = ({ username, posts: initialPosts }) => {
 
       fetchPosts();
     }
-  }, [username, initialPosts]);
+  }, [username, initialPosts, status]);
 
   const handleMouseEnter = (mp3Url: string) => {
     if (currentAudio) {

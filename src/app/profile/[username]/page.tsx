@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Layout from "../../components/Nav/Navigation";
 import Feed from "../../components/Feed/Feed";
@@ -15,7 +15,8 @@ interface User {
 }
 
 const ProfilePage: React.FC = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const params = useParams();
   const username = Array.isArray(params?.username)
     ? params.username[0]
@@ -25,9 +26,23 @@ const ProfilePage: React.FC = () => {
   const [view, setView] = useState<"posts" | "libraries">("posts");
 
   useEffect(() => {
+    if (status === "loading") return; // Do nothing while loading
+    if (!session) {
+      router.push("/Login"); // Redirect to login page if not authenticated
+      return;
+    }
+  }, [session, status, router]);
+
+  useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch(`/api/users/${username}`);
+        const response = await fetch(`/api/users/${username}`, {
+          method: "POST", // Use POST method
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username }), // Send username in the body
+        });
         const data = await response.json();
         if (data.success) {
           setUser(data.data);

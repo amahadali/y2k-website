@@ -5,7 +5,7 @@ import { getToken } from "next-auth/jwt";
 
 export default async function handler(req, res) {
   const { method } = req;
-  const { username } = req.query;
+  const { username } = req.query; // Get the username from the query parameters
 
   await dbConnect();
 
@@ -16,7 +16,7 @@ export default async function handler(req, res) {
   }
 
   switch (method) {
-    case "GET":
+    case "POST":
       try {
         const user = await User.findOne({ username });
         if (!user) {
@@ -30,7 +30,7 @@ export default async function handler(req, res) {
       }
       break;
     default:
-      res.setHeader("Allow", ["GET"]);
+      res.setHeader("Allow", ["POST"]);
       res.status(405).end(`Method ${method} Not Allowed`);
       break;
   }
