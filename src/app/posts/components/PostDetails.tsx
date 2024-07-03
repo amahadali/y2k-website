@@ -17,7 +17,7 @@ const PostDetails: React.FC<PostDetailsProps> = ({
   children,
 }) => {
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const [contentData, setContentData] = useState<any | null>(null);
   const [postId, setPostId] = useState<string | null>(null);
   const [postUserId, setPostUserId] = useState<string | null>(null); // State to store post user ID
@@ -27,13 +27,13 @@ const PostDetails: React.FC<PostDetailsProps> = ({
   useEffect(() => {
     const pathParts = window.location.pathname.split("/");
     const newContentId = pathParts[pathParts.length - 1];
-    if (newContentId && status === "authenticated") {
+    if (newContentId) {
       fetch(fetchUrl.replace("{id}", newContentId), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ contentId: newContentId }),
+        body: JSON.stringify({ id: newContentId }), // Send id in the body
       })
         .then((response) => response.json())
         .then((data) => {
@@ -55,7 +55,7 @@ const PostDetails: React.FC<PostDetailsProps> = ({
         })
         .catch((error) => console.error("Error fetching data:", error));
     }
-  }, [fetchUrl, status]);
+  }, [fetchUrl]);
 
   const handleDelete = async () => {
     if (postId) {

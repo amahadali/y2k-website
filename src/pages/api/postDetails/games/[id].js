@@ -3,12 +3,12 @@ import Game from "../../../../../models/Game";
 
 export default async function handler(req, res) {
   const { method } = req;
-  const { id } = req.query; // id will be the contentId
 
   await dbConnect();
 
   switch (method) {
-    case "GET":
+    case "POST":
+      const { id } = req.body; // Extract id from the request body
       try {
         const game = await Game.findById(id);
         if (!game) {
@@ -22,7 +22,7 @@ export default async function handler(req, res) {
       }
       break;
     default:
-      res.setHeader("Allow", ["GET"]);
+      res.setHeader("Allow", ["POST"]);
       res.status(405).end(`Method ${method} Not Allowed`);
       break;
   }
