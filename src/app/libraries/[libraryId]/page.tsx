@@ -36,19 +36,11 @@ interface Library {
 const LibraryDetailsPage: React.FC = () => {
   const { libraryId } = useParams() as unknown as LibraryParams;
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const [library, setLibrary] = useState<Library | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false); // State for menu toggle
-
-  useEffect(() => {
-    if (status === "loading") return; // Do nothing while loading
-    if (!session) {
-      router.push("/Login"); // Redirect to login page if not authenticated
-      return;
-    }
-  }, [session, status, router]);
 
   useEffect(() => {
     const fetchLibrary = async () => {

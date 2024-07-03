@@ -1,8 +1,5 @@
-// src/app/HomePage/page.tsx
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Feed from "../components/Feed/Feed";
 import Layout from "../components/Nav/Navigation";
@@ -10,20 +7,9 @@ import Layout from "../components/Nav/Navigation";
 export default function HomePage() {
   const { data: session, status } = useSession();
   const loading = status === "loading";
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!loading && !session) {
-      router.push("/Login");
-    }
-  }, [loading, session, router]);
 
   if (loading) {
     return <div>Loading...</div>; // or a loading spinner
-  }
-
-  if (!session) {
-    return null; // or redirect to login page
   }
 
   return (

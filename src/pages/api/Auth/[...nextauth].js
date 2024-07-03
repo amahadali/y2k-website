@@ -65,8 +65,7 @@ export const authOptions = {
     },
   },
   pages: {
-    signIn: "/auth/signin", // Specify a custom sign-in page
-    error: "/auth/error", // Specify a custom error page
+    signIn: "/Login", // Specify a custom sign-in page
   },
 };
 

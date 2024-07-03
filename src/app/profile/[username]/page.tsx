@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Layout from "../../components/Nav/Navigation";
 import Feed from "../../components/Feed/Feed";
@@ -15,9 +15,7 @@ interface User {
 }
 
 const ProfilePage: React.FC = () => {
-  const { data: session, status } = useSession();
-  const router = useRouter();
-  const loadingSession = status === "loading";
+  const { data: session } = useSession();
   const params = useParams();
   const username = Array.isArray(params?.username)
     ? params.username[0]
@@ -25,13 +23,6 @@ const ProfilePage: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loadingUser, setLoadingUser] = useState<boolean>(true);
   const [view, setView] = useState<"posts" | "libraries">("posts");
-
-  useEffect(() => {
-    if (status === "loading") return; // Do nothing while loading
-    if (!session) {
-      router.push("/Login"); // Redirect to login page if not authenticated
-    }
-  }, [session, status, router]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -53,7 +44,7 @@ const ProfilePage: React.FC = () => {
     }
   }, [username]);
 
-  if (loadingSession || loadingUser) {
+  if (loadingUser) {
     return <div>Loading...</div>;
   }
 
