@@ -1,3 +1,4 @@
+// src/pages/api/auth/[...nextauth].ts
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
@@ -33,6 +34,7 @@ export const authOptions = {
             name: user.username,
             email: user.email,
             username: user.username,
+            profileImage: user.profileImage, // Include profile image
           };
         } else {
           return null;
@@ -80,6 +82,7 @@ export const authOptions = {
       if (user) {
         token.id = user.id;
         token.username = user.username; // Add username to token
+        token.profileImage = user.profileImage; // Add profile image to token
       }
       return token;
     },
@@ -87,6 +90,7 @@ export const authOptions = {
       if (token) {
         session.user.id = token.id;
         session.user.username = token.username; // Add username to session
+        session.user.profileImage = token.profileImage; // Add profile image to session
       }
       return session;
     },
