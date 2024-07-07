@@ -86,6 +86,15 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
           Enter
         </button>
       </div>
+      <div className="mb-4">
+        <button
+          onClick={() => signIn("google", { callbackUrl: "/HomePage" })}
+          className="w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          type="button"
+        >
+          Sign in with Google
+        </button>
+      </div>
       <div className="text-center">
         <Link href="/ForgotPassword" className="text-gray-500 text-sm">
           Forgot password?

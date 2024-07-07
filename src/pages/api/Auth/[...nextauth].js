@@ -1,6 +1,6 @@
-// src/pages/api/auth/[...nextauth].ts
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
 import clientPromise from "../../../../lib/mongodbClient"; // Use the new file for MongoDB client
 import User from "../../../../models/User";
@@ -39,24 +39,51 @@ export const authOptions = {
         }
       },
     }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      allowDangerousEmailAccountLinking: true, // Enable account linking
+    }),
   ],
   adapter: MongoDBAdapter(clientPromise),
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
-  jwt: {
-    secret: process.env.NEXTAUTH_SECRET,
-  },
   callbacks: {
-    jwt: async ({ token, user }) => {
+    async signIn({ user, account, profile }) {
+      await dbConnect(); // Ensure mongoose connection
+
+      if (account.provider === "google") {
+        const existingUser = await User.findOne({ email: user.email });
+
+        if (existingUser) {
+          // User already exists, no need to create a new one
+          return true; // Allow sign-in
+        } else {
+          // Create a new user if they do not exist
+          const newUser = new User({
+            username: user.name,
+            email: user.email,
+            profileImage: user.image,
+            dateJoined: new Date(),
+            libraries: [],
+          });
+          await newUser.save();
+          return true; // Allow sign-in
+        }
+      }
+
+      return true; // Allow sign-in for other providers
+    },
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
         token.username = user.username; // Add username to token
       }
       return token;
     },
-    session: async ({ session, token }) => {
+    async session({ session, token }) {
       if (token) {
         session.user.id = token.id;
         session.user.username = token.username; // Add username to session

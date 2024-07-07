@@ -1,3 +1,4 @@
+// src/pages/api/auth/signup.ts
 import { hash } from "bcryptjs";
 import dbConnect from "../../../../lib/dbConnect";
 import User from "../../../../models/User";
