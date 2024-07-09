@@ -60,34 +60,52 @@ const EditProfilePopup: React.FC<EditProfilePopupProps> = ({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white p-4 rounded-md shadow-lg">
+      <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
+        <h2 className="text-2xl font-semibold text-white mb-4">Edit Profile</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-gray-700">Username</label>
+            <label className="block text-gray-300 font-medium">Username</label>
             <input
               type="text"
               value={newUsername}
               onChange={(e) => setNewUsername(e.target.value)}
-              className="w-full px-4 py-2 border rounded-md"
+              className="w-full px-4 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
           </div>
           <div>
-            <label className="block text-gray-700">Profile Image</label>
-            <input type="file" onChange={handleFileChange} />
+            <label className="block text-gray-300 font-medium">
+              Profile Image
+            </label>
+            <input
+              type="file"
+              onChange={handleFileChange}
+              className="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            />
           </div>
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded-md"
-          >
-            Save Changes
-          </button>
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 bg-gray-500 text-white rounded-md"
-          >
-            Cancel
-          </button>
+          {profileImage && (
+            <div className="flex justify-center">
+              <img
+                src={URL.createObjectURL(profileImage)}
+                alt="Profile Preview"
+                className="w-24 h-24 rounded-full object-cover border-2 border-gray-600"
+              />
+            </div>
+          )}
+          <div className="flex justify-end space-x-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            >
+              Save Changes
+            </button>
+          </div>
         </form>
       </div>
     </div>

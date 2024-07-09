@@ -107,14 +107,16 @@ const Feed: React.FC<FeedProps> = ({
   if (!posts.length) return <p className="p-4">No posts available</p>;
 
   const breakpointColumnsObj = {
-    default: 4,
-    1100: 3,
-    700: 2,
+    default: 6,
+    1600: 5,
+    1200: 4,
+    1000: 3,
+    800: 2,
     500: 1,
   };
 
   return (
-    <main className="p-4 mt-8">
+    <main className="p-4 mt-8 w-full">
       <Masonry
         breakpointCols={breakpointColumnsObj}
         className="my-masonry-grid"

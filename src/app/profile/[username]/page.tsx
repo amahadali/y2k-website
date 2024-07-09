@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Layout from "../../components/Nav/Navigation";
 import Feed from "../../components/Feed/Feed";
@@ -74,37 +74,35 @@ const ProfilePage: React.FC = () => {
 
   return (
     <Layout>
-      <div className="max-w-4xl mx-auto p-4">
-        <div className="flex items-center space-x-4">
-          <div className="w-24 h-24 bg-gray-700 rounded-full flex items-center justify-center">
+      <div className="max-w-6xl mx-auto p-4 text-center">
+        <div className="flex flex-col items-center">
+          <div className="w-32 h-32 bg-gray-700 rounded-full overflow-hidden flex items-center justify-center">
             {user.profileImage ? (
               <img
                 src={user.profileImage}
                 alt={user.username}
-                className="rounded-full"
+                className="w-full h-full object-cover"
               />
             ) : (
-              <span className="text-white text-2xl">
+              <span className="text-white text-4xl">
                 {user.username.charAt(0)}
               </span>
             )}
           </div>
-          <div>
-            <h1 className="text-3xl">{user.username}</h1>
-            <p className="text-gray-400">
-              Joined on {new Date(user.dateJoined).toLocaleDateString()}
-            </p>
-            {session?.user?.username === user.username && (
-              <button
-                onClick={() => setIsEditingProfile(true)}
-                className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md"
-              >
-                Edit Profile
-              </button>
-            )}
-          </div>
+          <h1 className="text-3xl mt-4">{user.username}</h1>
+          <p className="text-gray-400">
+            Joined on {new Date(user.dateJoined).toLocaleDateString()}
+          </p>
+          {session?.user?.username === user.username && (
+            <button
+              onClick={() => setIsEditingProfile(true)}
+              className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md"
+            >
+              Edit Profile
+            </button>
+          )}
         </div>
-        <div className="flex space-x-4 mt-4">
+        <div className="flex justify-center space-x-4 mt-4">
           <button
             onClick={() => setView("posts")}
             className={`px-4 py-2 ${
@@ -122,11 +120,13 @@ const ProfilePage: React.FC = () => {
             Libraries
           </button>
         </div>
-        {view === "posts" ? (
-          <Feed username={user.username} />
-        ) : (
-          <LibraryFeed username={user.username} />
-        )}
+        <div className="mt-8">
+          {view === "posts" ? (
+            <Feed username={user.username} />
+          ) : (
+            <LibraryFeed username={user.username} />
+          )}
+        </div>
         {isEditingProfile && (
           <EditProfilePopup
             user={user}
