@@ -34,7 +34,6 @@ const LibraryPopup: React.FC<LibraryPopupProps> = ({
         const data = await response.json();
         if (data.success) {
           setLibraries(data.data);
-          setLibraries(data.data);
         } else {
           setError(data.message);
         }

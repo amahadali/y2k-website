@@ -16,12 +16,9 @@ interface User {
 }
 
 const ProfilePage: React.FC = () => {
-  const { data: session, status } = useSession();
-  const router = useRouter();
+  const { data: session } = useSession();
   const params = useParams();
-  const username = Array.isArray(params?.username)
-    ? params.username[0]
-    : params?.username;
+  const username = params?.username;
   const [user, setUser] = useState<User | null>(null);
   const [loadingUser, setLoadingUser] = useState<boolean>(true);
   const [view, setView] = useState<"posts" | "libraries">("posts");
