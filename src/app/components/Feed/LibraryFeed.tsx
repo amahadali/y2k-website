@@ -55,7 +55,10 @@ const LibraryFeed: React.FC<LibraryFeedProps> = ({ username }) => {
     <div className="p-4 mt-8">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {libraries.map((library) => (
-          <Link key={library._id} href={`/libraries/${library._id}`}>
+          <Link
+            key={library._id}
+            href={`/profile/${username}/libraries/${library._id}`}
+          >
             <div className="relative group overflow-hidden rounded-lg shadow-lg cursor-pointer">
               <div className="h-48 bg-gray-700 flex items-center justify-center">
                 {library.thumbnails.slice(0, 4).map((thumbnail, index) => (

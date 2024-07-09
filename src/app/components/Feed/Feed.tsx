@@ -95,6 +95,13 @@ const Feed: React.FC<FeedProps> = ({
     }
   };
 
+  const handleDeletePost = (postId: string) => {
+    setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
+    if (onDeletePost) {
+      onDeletePost(postId);
+    }
+  };
+
   if (loading) return <p className="p-4">Loading...</p>;
   if (error) return <p className="p-4">{error}</p>;
   if (!posts.length) return <p className="p-4">No posts available</p>;
@@ -145,7 +152,7 @@ const Feed: React.FC<FeedProps> = ({
             </Link>
             {isOwner && (
               <button
-                onClick={() => onDeletePost && onDeletePost(post._id)}
+                onClick={() => handleDeletePost(post._id)}
                 className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
               >
                 &minus;
