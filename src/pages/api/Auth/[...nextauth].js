@@ -1,9 +1,8 @@
-// src/pages/api/auth/[...nextauth].ts
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
-import clientPromise from "../../../../lib/mongodbClient"; // Use the new file for MongoDB client
+import clientPromise from "../../../../lib/mongodbClient";
 import User from "../../../../models/User";
 import dbConnect from "../../../../lib/dbConnect";
 import { compare } from "bcryptjs";
@@ -21,7 +20,7 @@ export const authOptions = {
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
-        await dbConnect(); // Ensure mongoose connection
+        await dbConnect();
         const user = await User.findOne({
           $or: [
             { username: credentials?.username },
@@ -34,7 +33,7 @@ export const authOptions = {
             name: user.username,
             email: user.email,
             username: user.username,
-            profileImage: user.profileImage, // Include profile image
+            profileImage: user.profileImage,
           };
         } else {
           return null;
@@ -44,7 +43,7 @@ export const authOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      allowDangerousEmailAccountLinking: true, // Enable account linking
+      allowDangerousEmailAccountLinking: true,
     }),
   ],
   adapter: MongoDBAdapter(clientPromise),
@@ -54,16 +53,12 @@ export const authOptions = {
   },
   callbacks: {
     async signIn({ user, account, profile }) {
-      await dbConnect(); // Ensure mongoose connection
-
+      await dbConnect();
       if (account.provider === "google") {
         const existingUser = await User.findOne({ email: user.email });
-
         if (existingUser) {
-          // User already exists, no need to create a new one
-          return true; // Allow sign-in
+          return true;
         } else {
-          // Create a new user if they do not exist
           const newUser = new User({
             username: user.name,
             email: user.email,
@@ -72,31 +67,32 @@ export const authOptions = {
             libraries: [],
           });
           await newUser.save();
-          return true; // Allow sign-in
+          return true;
         }
       }
-
-      return true; // Allow sign-in for other providers
+      return true;
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
-        token.username = user.username; // Add username to token
-        token.profileImage = user.profileImage; // Add profile image to token
+        token.username = user.username;
+        token.profileImage = user.profileImage;
+      }
+      if (trigger === "update" && session) {
+        token.username = session.username;
+        token.profileImage = session.profileImage;
       }
       return token;
     },
     async session({ session, token }) {
-      if (token) {
-        session.user.id = token.id;
-        session.user.username = token.username; // Add username to session
-        session.user.profileImage = token.profileImage; // Add profile image to session
-      }
+      session.user.id = token.id;
+      session.user.username = token.username;
+      session.user.profileImage = token.profileImage;
       return session;
     },
   },
   pages: {
-    signIn: "/Login", // Specify a custom sign-in page
+    signIn: "/Login",
   },
 };
 

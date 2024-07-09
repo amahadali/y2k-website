@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import Layout from "../../components/Nav/Navigation";
 import Feed from "../../components/Feed/Feed";
 import LibraryFeed from "../../components/Feed/LibraryFeed";
+import EditProfilePopup from "../components/EditProfilePopup";
 
 interface User {
   username: string;
@@ -24,14 +25,7 @@ const ProfilePage: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loadingUser, setLoadingUser] = useState<boolean>(true);
   const [view, setView] = useState<"posts" | "libraries">("posts");
-
-  useEffect(() => {
-    if (status === "loading") return; // Do nothing while loading
-    if (!session) {
-      router.push("/Login"); // Redirect to login page if not authenticated
-      return;
-    }
-  }, [session, status, router]);
+  const [isEditingProfile, setIsEditingProfile] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -58,6 +52,20 @@ const ProfilePage: React.FC = () => {
       fetchUser();
     }
   }, [username]);
+
+  const handleProfileUpdated = (
+    newUsername: string,
+    newProfileImage?: string
+  ) => {
+    setUser((prevUser) => {
+      if (!prevUser) return prevUser;
+      return {
+        ...prevUser,
+        username: newUsername,
+        profileImage: newProfileImage || prevUser.profileImage,
+      };
+    });
+  };
 
   if (loadingUser) {
     return <div>Loading...</div>;
@@ -89,6 +97,14 @@ const ProfilePage: React.FC = () => {
             <p className="text-gray-400">
               Joined on {new Date(user.dateJoined).toLocaleDateString()}
             </p>
+            {session?.user?.username === user.username && (
+              <button
+                onClick={() => setIsEditingProfile(true)}
+                className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md"
+              >
+                Edit Profile
+              </button>
+            )}
           </div>
         </div>
         <div className="flex space-x-4 mt-4">
@@ -113,6 +129,13 @@ const ProfilePage: React.FC = () => {
           <Feed username={user.username} />
         ) : (
           <LibraryFeed username={user.username} />
+        )}
+        {isEditingProfile && (
+          <EditProfilePopup
+            user={user}
+            onClose={() => setIsEditingProfile(false)}
+            onProfileUpdated={handleProfileUpdated}
+          />
         )}
       </div>
     </Layout>

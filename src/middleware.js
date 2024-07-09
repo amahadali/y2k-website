@@ -27,6 +27,7 @@ export const config = {
     "/posts/:path*", // Protect all subroutes under posts
     "/profile/:path*", // Protect all subroutes under profile
     "/components/:path*", // Protect all subroutes under components
+
     "/api/:path*", // Protect all subroutes under API
   ],
 };
