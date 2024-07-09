@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 
@@ -54,7 +56,7 @@ const LibraryPopup: React.FC<LibraryPopupProps> = ({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ postId }),
+        body: JSON.stringify({ postId, action: "add" }),
       });
 
       if (!response.ok) {

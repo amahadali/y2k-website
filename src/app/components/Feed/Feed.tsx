@@ -22,9 +22,16 @@ interface Post {
 interface FeedProps {
   username?: string;
   posts?: Post[];
+  onDeletePost?: (postId: string) => void;
+  isOwner?: boolean;
 }
 
-const Feed: React.FC<FeedProps> = ({ username, posts: initialPosts }) => {
+const Feed: React.FC<FeedProps> = ({
+  username,
+  posts: initialPosts,
+  onDeletePost,
+  isOwner,
+}) => {
   const { data: session, status } = useSession();
   const [posts, setPosts] = useState<Post[]>(initialPosts || []);
   const [loading, setLoading] = useState(!initialPosts);
@@ -107,33 +114,44 @@ const Feed: React.FC<FeedProps> = ({ username, posts: initialPosts }) => {
         columnClassName="my-masonry-grid_column"
       >
         {posts.map((post) => (
-          <Link
-            key={post._id}
-            href={`/posts/${post.postType}s/${post.contentId}`}
-            onClick={handlePostClick}
-          >
-            <div
-              className="relative group overflow-hidden rounded-lg shadow-lg cursor-pointer mb-4"
-              onMouseEnter={() => handleMouseEnter(post.content?.mp3Url!)}
-              onMouseLeave={handleMouseLeave}
+          <div key={post._id} className="relative group">
+            <Link
+              href={`/posts/${post.postType}s/${post.contentId}`}
+              onClick={handlePostClick}
             >
-              <img
-                src={post.imageUrl}
-                alt={post.title}
-                className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <h3 className="text-white text-lg font-bold">{post.title}</h3>
-                <p className="text-gray-300 capitalize">{post.postType}</p>
-                {post.postType === "songs" && post.content?.artistName && (
-                  <p className="text-gray-300">{post.content.artistName}</p>
-                )}
-                {post.postType === "games" && post.content?.developerName && (
-                  <p className="text-gray-300">{post.content.developerName}</p>
-                )}
+              <div
+                className="relative group overflow-hidden rounded-lg shadow-lg cursor-pointer mb-4"
+                onMouseEnter={() => handleMouseEnter(post.content?.mp3Url!)}
+                onMouseLeave={handleMouseLeave}
+              >
+                <img
+                  src={post.imageUrl}
+                  alt={post.title}
+                  className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <h3 className="text-white text-lg font-bold">{post.title}</h3>
+                  <p className="text-gray-300 capitalize">{post.postType}</p>
+                  {post.postType === "songs" && post.content?.artistName && (
+                    <p className="text-gray-300">{post.content.artistName}</p>
+                  )}
+                  {post.postType === "games" && post.content?.developerName && (
+                    <p className="text-gray-300">
+                      {post.content.developerName}
+                    </p>
+                  )}
+                </div>
               </div>
-            </div>
-          </Link>
+            </Link>
+            {isOwner && (
+              <button
+                onClick={() => onDeletePost && onDeletePost(post._id)}
+                className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+              >
+                &minus;
+              </button>
+            )}
+          </div>
         ))}
       </Masonry>
     </main>

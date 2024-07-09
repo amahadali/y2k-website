@@ -74,6 +74,7 @@
 
 /* Style your items */
 .my-masonry-grid_column > div {
-  background: grey;
+  /* Remove or adjust the background color */
+  background: transparent; /* Or simply remove this line */
   margin-bottom: 30px;
 }

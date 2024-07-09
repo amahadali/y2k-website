@@ -40,31 +40,31 @@ const LibraryDetailsPage: React.FC = () => {
   const [library, setLibrary] = useState<Library | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [menuOpen, setMenuOpen] = useState(false); // State for menu toggle
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const fetchLibrary = async () => {
+    try {
+      const response = await fetch(`/api/libraries/${libraryId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: libraryId }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setLibrary(data.data);
+      } else {
+        setError(data.message);
+      }
+    } catch (error) {
+      setError("Failed to fetch library posts");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchLibrary = async () => {
-      try {
-        const response = await fetch(`/api/libraries/${libraryId}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ id: libraryId }),
-        });
-        const data = await response.json();
-        if (data.success) {
-          setLibrary(data.data);
-        } else {
-          setError(data.message);
-        }
-      } catch (error) {
-        setError("Failed to fetch library posts");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     if (libraryId) {
       fetchLibrary();
     }
@@ -83,6 +83,26 @@ const LibraryDetailsPage: React.FC = () => {
       }
     } catch (error) {
       console.error("Error deleting library:", error);
+    }
+  };
+
+  const handleDeletePost = async (postId: string) => {
+    try {
+      const response = await fetch(`/api/libraries/${libraryId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ postId, action: "remove" }),
+      });
+
+      if (response.ok) {
+        await fetchLibrary(); // Re-fetch the library data to update the UI
+      } else {
+        console.error("Failed to delete post from library");
+      }
+    } catch (error) {
+      console.error("Error deleting post from library:", error);
     }
   };
 
@@ -117,7 +137,11 @@ const LibraryDetailsPage: React.FC = () => {
           )}
         </div>
         <p className="text-gray-600 mb-4">{library.description}</p>
-        <Feed posts={library.posts} />
+        <Feed
+          posts={library.posts}
+          isOwner={session?.user?.id === library.user}
+          onDeletePost={handleDeletePost}
+        />
       </div>
     </Layout>
   );

@@ -41,7 +41,7 @@ export default async function handler(req, res) {
     case "PATCH":
       try {
         const { id } = req.query;
-        const { postId } = req.body;
+        const { postId, action } = req.body;
 
         if (!postId) {
           return res
@@ -63,16 +63,20 @@ export default async function handler(req, res) {
             .json({ success: false, message: "Unauthorized" });
         }
 
-        if (!library.posts.includes(postId)) {
-          library.posts.push(postId);
-          await library.save();
+        if (action === "add") {
+          if (!library.posts.includes(postId)) {
+            library.posts.push(postId);
+          }
+        } else if (action === "remove") {
+          library.posts.pull(postId);
+        } else {
+          return res
+            .status(400)
+            .json({ success: false, message: "Invalid action" });
         }
 
-        res.status(200).json({
-          success: true,
-          message: "Post added to library",
-          data: library,
-        });
+        await library.save();
+        res.status(200).json({ success: true, data: library });
       } catch (error) {
         console.error("Error updating library:", error);
         res.status(500).json({ success: false, message: error.message });
