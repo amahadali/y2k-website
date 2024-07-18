@@ -40,23 +40,10 @@ const Navbar: React.FC<NavbarProps> = ({
         <div className="relative">
           <button
             className="text-white text-lg flex items-center space-x-2"
-            onClick={toggleDropdown}
+            onClick={() => router.push("/HomePage")}
           >
             <span>Home</span>
           </button>
-          {dropdownOpen && (
-            <div className="absolute left-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg py-2 z-20">
-              <button
-                className="block px-4 py-2 text-sm text-white hover:bg-gray-700 cursor-pointer"
-                onClick={() => router.push("/HomePage")}
-              >
-                Home
-              </button>
-              <button className="block px-4 py-2 text-sm text-white hover:bg-gray-700 cursor-pointer">
-                Explore
-              </button>
-            </div>
-          )}
         </div>
       </div>
       <div className="flex-1 flex justify-center items-center relative">

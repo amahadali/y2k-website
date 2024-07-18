@@ -18,9 +18,6 @@ export default function HomePage() {
         <button className="text-white text-lg px-4 py-2 bg-gray-800 rounded-md cursor-pointer">
           Feed
         </button>
-        <button className="text-white text-lg px-4 py-2 bg-gray-800 rounded-md cursor-pointer">
-          Explore
-        </button>
       </nav>
       <Feed />
     </Layout>
