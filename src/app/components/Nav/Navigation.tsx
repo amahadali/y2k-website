@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { useSession } from "next-auth/react";
 import Navbar from "./components/Navbar";
 import ElementPopup from "./components/ElementPopup";
-import ClusterPopup from "./components/ClusterPopup";
+import ClusterPopup from "./components/LibraryPopup";
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isElementPopupOpen, setIsElementPopupOpen] = useState(false);

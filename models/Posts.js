@@ -15,7 +15,6 @@ const postSchema = new mongoose.Schema({
     refPath: "postType",
   },
   user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  library: { type: mongoose.Schema.Types.ObjectId, ref: "Library" },
   datePosted: { type: Date, default: Date.now },
 });
 

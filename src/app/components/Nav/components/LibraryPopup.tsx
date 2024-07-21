@@ -69,18 +69,6 @@ const ClusterPopup: React.FC<ClusterPopupProps> = ({ closeClusterPopup }) => {
             onChange={(e) => setDescription(e.target.value)}
           />
         </div>
-        <div className="flex items-center mb-4">
-          <input
-            type="checkbox"
-            id="make-private"
-            className="mr-2"
-            checked={isPrivate}
-            onChange={(e) => setIsPrivate(e.target.checked)}
-          />
-          <label htmlFor="make-private" className="text-gray-400">
-            Make Private
-          </label>
-        </div>
         <div className="flex justify-end">
           <button
             className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"

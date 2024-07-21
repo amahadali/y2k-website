@@ -75,6 +75,17 @@ const PostDetails: React.FC<PostDetailsProps> = ({
     }
   };
 
+  const handleCopyLink = () => {
+    navigator.clipboard
+      .writeText(window.location.href)
+      .then(() => {
+        alert("Link copied to clipboard");
+      })
+      .catch((error) => {
+        console.error("Failed to copy link:", error);
+      });
+  };
+
   return (
     <div className="flex flex-col md:flex-row items-center md:items-start relative min-h-screen bg-black text-white">
       <button
@@ -94,14 +105,8 @@ const PostDetails: React.FC<PostDetailsProps> = ({
         {menuOpen && (
           <div className="relative">
             <div className="absolute right-0 mt-2 w-48 bg-black text-white rounded-md shadow-lg py-2">
-              <a href="#" className="block px-4 py-2">
-                Source
-              </a>
-              <a href="#" className="block px-4 py-2">
+              <a href="#" className="block px-4 py-2" onClick={handleCopyLink}>
                 Copy Link
-              </a>
-              <a href="#" className="block px-4 py-2">
-                Disconnect
               </a>
               <a href="#" className="block px-4 py-2 text-red-500">
                 Report
