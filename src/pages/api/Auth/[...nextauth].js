@@ -44,6 +44,13 @@ export const authOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       allowDangerousEmailAccountLinking: true,
+      authorization: {
+        params: {
+          scope: "openid profile email",
+          access_type: "offline",
+          prompt: "consent",
+        },
+      },
     }),
   ],
   adapter: MongoDBAdapter(clientPromise),
@@ -89,6 +96,18 @@ export const authOptions = {
       session.user.username = token.username;
       session.user.profileImage = token.profileImage;
       return session;
+    },
+    async linkAccount({ user, account, profile }) {
+      const existingAccount = await db.collection("accounts").findOne({
+        provider: account.provider,
+        providerAccountId: account.providerAccountId,
+      });
+
+      if (existingAccount) {
+        account.id = existingAccount._id;
+      }
+
+      return true;
     },
   },
   pages: {

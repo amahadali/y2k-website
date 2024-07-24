@@ -26,9 +26,6 @@ export default function Home() {
             <a href="#" className="text-green-500">
               Manifesto
             </a>
-            <a href="#" className="text-green-500">
-              Careers
-            </a>
           </nav>
           <div className="flex space-x-4 ml-4">
             <Link href="/Login">
