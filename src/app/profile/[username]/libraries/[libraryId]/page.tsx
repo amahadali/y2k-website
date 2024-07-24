@@ -21,7 +21,9 @@ interface Post {
     developerName?: string;
     mp3Url?: string;
   };
-  user: string;
+  user: {
+    username: string;
+  } | null;
   datePosted: string;
 }
 
@@ -141,6 +143,7 @@ const LibraryDetailsPage: React.FC = () => {
           posts={library.posts}
           isOwner={session?.user?.id === library.user}
           onDeletePost={handleDeletePost}
+          showUploader={false} // Hide uploader information
         />
       </div>
     </Layout>

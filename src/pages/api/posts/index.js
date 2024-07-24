@@ -59,7 +59,8 @@ export default async function handler(req, res) {
           posts.map(async (post) => {
             const model = modelMapping[post.postType];
             const content = await model.findById(post.contentId).lean();
-            return { ...post, content };
+            const user = await User.findById(post.user).lean();
+            return { ...post, content, user };
           })
         );
 

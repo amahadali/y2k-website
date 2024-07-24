@@ -11,6 +11,9 @@ interface Post {
   imageUrl: string;
   postType: string;
   contentId: string;
+  user: {
+    username: string;
+  } | null;
   content?: {
     artistName?: string;
     developerName?: string;
@@ -24,6 +27,7 @@ interface FeedProps {
   posts?: Post[];
   onDeletePost?: (postId: string) => void;
   isOwner?: boolean;
+  showUploader?: boolean; // New prop to control showing uploader
 }
 
 const Feed: React.FC<FeedProps> = ({
@@ -31,6 +35,7 @@ const Feed: React.FC<FeedProps> = ({
   posts: initialPosts,
   onDeletePost,
   isOwner,
+  showUploader = true, // Default to true
 }) => {
   const { data: session, status } = useSession();
   const [posts, setPosts] = useState<Post[]>(initialPosts || []);
@@ -148,6 +153,13 @@ const Feed: React.FC<FeedProps> = ({
                     <p className="text-gray-300">
                       {post.content.developerName}
                     </p>
+                  )}
+                  {showUploader && post.user && (
+                    <Link href={`/profile/${post.user.username}`}>
+                      <p className="text-gray-400 text-sm mt-1 hover:underline">
+                        Uploaded by {post.user.username}
+                      </p>
+                    </Link>
                   )}
                 </div>
               </div>
