@@ -57,13 +57,6 @@ export const authOptions = {
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
-    cookie: {
-      name: "next-auth.session-token",
-      path: "/",
-      sameSite: "lax",
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-    },
   },
   callbacks: {
     async signIn({ user, account, profile }) {
@@ -88,25 +81,18 @@ export const authOptions = {
     },
     async jwt({ token, user, trigger, session }) {
       if (user) {
-        // Cache user information in the JWT
         token.id = user.id;
-        token.name = user.name; // Include 'name' as it is used in session
-        token.email = user.email;
         token.username = user.username;
         token.profileImage = user.profileImage;
       }
       if (trigger === "update" && session) {
-        // Update token with the latest session info
-        token.username = session.user.username;
-        token.profileImage = session.user.profileImage;
+        token.username = session.username;
+        token.profileImage = session.profileImage;
       }
       return token;
     },
     async session({ session, token }) {
-      // Populate session with data from the JWT
       session.user.id = token.id;
-      session.user.name = token.name; // Ensure 'name' is included in session
-      session.user.email = token.email;
       session.user.username = token.username;
       session.user.profileImage = token.profileImage;
       return session;
