@@ -1,28 +1,16 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import Navbar from "./components/Navbar";
 import ElementPopup from "./components/ElementPopup";
 import ClusterPopup from "./components/LibraryPopup";
+import { useSession } from "next-auth/react";
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isElementPopupOpen, setIsElementPopupOpen] = useState(false);
   const [isClusterPopupOpen, setIsClusterPopupOpen] = useState(false);
   const [category, setCategory] = useState<string>("");
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
-  const [createDropdownOpen, setCreateDropdownOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
-
-  const { data: session, status } = useSession();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (status === "authenticated" || status === "unauthenticated") {
-      setRefreshKey((prevKey) => prevKey + 1);
-    }
-  }, [status]);
 
   const openElementPopup = () => setIsElementPopupOpen(true);
   const closeElementPopup = () => setIsElementPopupOpen(false);
@@ -30,124 +18,22 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const openClusterPopup = () => setIsClusterPopupOpen(true);
   const closeClusterPopup = () => setIsClusterPopupOpen(false);
 
-  const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
-  const toggleProfileDropdown = () =>
-    setProfileDropdownOpen(!profileDropdownOpen);
-  const toggleCreateDropdown = () => setCreateDropdownOpen(!createDropdownOpen);
+  const { status } = useSession();
 
-  const handleLogout = async () => {
-    await signOut({ redirect: true, callbackUrl: "/Login" });
-  };
+  useEffect(() => {
+    if (status === "authenticated" || status === "unauthenticated") {
+      // Trigger a re-render by changing the refreshKey
+      setRefreshKey((prevKey) => prevKey + 1);
+    }
+  }, [status]);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-900 text-white">
-      <header className="flex justify-between items-center p-4 bg-black bg-opacity-90 shadow-lg">
-        <div className="flex items-center space-x-4">
-          <img
-            src="/images/logo.png"
-            alt="Logo"
-            width={50}
-            height={50}
-            className="inline-block cursor-pointer"
-            onClick={() => router.push("/HomePage")}
-          />
-          <div className="relative">
-            <button
-              className="text-white text-lg flex items-center space-x-2"
-              onClick={() => router.push("/HomePage")}
-            >
-              <span>Home</span>
-            </button>
-          </div>
-        </div>
-        <div className="flex-1 flex justify-center items-center relative">
-          <div className="relative w-1/2">
-            <img
-              src="/images/search.png"
-              alt="Search"
-              className="absolute left-3 top-2 w-6 h-6"
-            />
-            <input
-              type="text"
-              placeholder="Search Y2KDL..."
-              className="pl-10 pr-4 py-2 bg-gray-800 text-white rounded-full focus:outline-none focus:ring-2 focus:ring-gray-500 w-full"
-            />
-          </div>
-        </div>
-        <div className="flex items-center space-x-4">
-          <div className="relative">
-            <button
-              className="px-4 py-2 bg-gray-800 text-white rounded-full focus:outline-none"
-              onClick={toggleCreateDropdown}
-            >
-              Create
-            </button>
-            {createDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg py-2 z-20">
-                <button
-                  className="block px-4 py-2 text-sm text-white hover:bg-gray-700 cursor-pointer"
-                  onClick={openClusterPopup}
-                >
-                  Library
-                </button>
-                <button
-                  className="block px-4 py-2 text-sm text-white hover:bg-gray-700 cursor-pointer"
-                  onClick={openElementPopup}
-                >
-                  Element
-                </button>
-              </div>
-            )}
-          </div>
-          <div className="relative">
-            <div
-              className="w-8 h-8 bg-gray-600 rounded-full cursor-pointer"
-              onClick={toggleProfileDropdown}
-            >
-              {session?.user?.profileImage ? (
-                <img
-                  src={session.user.profileImage}
-                  alt={session.user.username}
-                  className="w-8 h-8 rounded-full"
-                />
-              ) : (
-                <div className="w-8 h-8 bg-gray-600 rounded-full"></div>
-              )}
-            </div>
-            {profileDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg py-2 z-20">
-                <div className="flex flex-col items-center p-4">
-                  {session?.user?.profileImage ? (
-                    <img
-                      src={session.user.profileImage}
-                      alt={session.user.username}
-                      className="w-16 h-16 rounded-full mb-2"
-                    />
-                  ) : (
-                    <div className="w-16 h-16 bg-gray-600 rounded-full mb-2"></div>
-                  )}
-                  <p className="text-white">
-                    {session?.user.username || "Loading..."}
-                  </p>
-                  <a
-                    href={`/profile/${session?.user.username}`}
-                    className="text-blue-500 text-sm"
-                  >
-                    View Profile
-                  </a>
-                </div>
-                <div className="border-t border-gray-700"></div>
-                <button
-                  className="block px-4 py-2 text-sm text-white hover:bg-gray-700 w-full text-left"
-                  onClick={handleLogout}
-                >
-                  Logout
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </header>
+      <Navbar
+        key={refreshKey}
+        openClusterPopup={openClusterPopup}
+        openElementPopup={openElementPopup}
+      />
       <main className="flex-1">{children}</main>
       {isElementPopupOpen && (
         <ElementPopup

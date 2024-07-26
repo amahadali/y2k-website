@@ -1,4 +1,4 @@
-/*import React, { useState } from "react";
+import React, { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -34,7 +34,7 @@ const Navbar: React.FC<NavbarProps> = ({
           alt="Logo"
           width={50}
           height={50}
-          className="inline-block"
+          className="inline-block cursor-pointer"
           onClick={() => router.push("/HomePage")}
         />
         <div className="relative">
@@ -113,7 +113,7 @@ const Navbar: React.FC<NavbarProps> = ({
                   <div className="w-16 h-16 bg-gray-600 rounded-full mb-2"></div>
                 )}
                 <p className="text-white">
-                  {session?.user.username || "Loading..."}
+                  {session?.user?.username || "Loading..."}
                 </p>
                 <a
                   href={`/profile/${session?.user.username}`}
@@ -122,7 +122,6 @@ const Navbar: React.FC<NavbarProps> = ({
                   View Profile
                 </a>
               </div>
-              <div className="border-t border-gray-700"></div>
               <div className="border-t border-gray-700"></div>
               <button
                 className="block px-4 py-2 text-sm text-white hover:bg-gray-700 w-full text-left"
@@ -138,4 +137,4 @@ const Navbar: React.FC<NavbarProps> = ({
   );
 };
 
-export default Navbar; */
+export default Navbar;
