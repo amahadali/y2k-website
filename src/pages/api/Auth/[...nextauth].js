@@ -44,6 +44,13 @@ export const authOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       allowDangerousEmailAccountLinking: true,
+      authorization: {
+        params: {
+          scope: "openid profile email",
+          access_type: "offline",
+          prompt: "consent",
+        },
+      },
     }),
   ],
   adapter: MongoDBAdapter(clientPromise),
@@ -107,7 +114,5 @@ export const authOptions = {
     signIn: "/Login",
   },
 };
-
-//changes made
 
 export default NextAuth(authOptions);

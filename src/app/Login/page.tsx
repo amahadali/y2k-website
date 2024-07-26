@@ -34,12 +34,12 @@ export default function Login() {
               className="mb-4"
             />
             <h2 className="text-2xl text-white">Log in</h2>
-            <a href="#" className="text-gray-500 text-sm mt-2">
+            <p className="text-gray-500 text-sm mt-2">
               or{" "}
               <Link href="/SignUp" className="text-blue-500">
                 create an account
               </Link>
-            </a>
+            </p>
           </div>
           <LoginForm onLoginSuccess={handleLoginSuccess} />
         </div>
