@@ -1,11 +1,10 @@
-// src/Nav/Navigation.tsx
 "use client";
 
 import React, { useState } from "react";
-import { useSession } from "next-auth/react";
 import Navbar from "./components/Navbar";
 import ElementPopup from "./components/ElementPopup";
 import ClusterPopup from "./components/LibraryPopup";
+import { useSession } from "next-auth/react";
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isElementPopupOpen, setIsElementPopupOpen] = useState(false);
@@ -18,11 +17,18 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const openClusterPopup = () => setIsClusterPopupOpen(true);
   const closeClusterPopup = () => setIsClusterPopupOpen(false);
 
+  const { status, data: session } = useSession();
+
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-900 text-white">
       <Navbar
         openClusterPopup={openClusterPopup}
         openElementPopup={openElementPopup}
+        session={session}
       />
       <main className="flex-1">{children}</main>
       {isElementPopupOpen && (

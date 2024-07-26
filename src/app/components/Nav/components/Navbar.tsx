@@ -5,16 +5,17 @@ import { useRouter } from "next/navigation";
 interface NavbarProps {
   openClusterPopup: () => void;
   openElementPopup: () => void;
+  session: any;
 }
 
 const Navbar: React.FC<NavbarProps> = ({
   openClusterPopup,
   openElementPopup,
+  session,
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [createDropdownOpen, setCreateDropdownOpen] = useState(false);
-  const { data: session } = useSession();
   const router = useRouter();
 
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
@@ -34,7 +35,7 @@ const Navbar: React.FC<NavbarProps> = ({
           alt="Logo"
           width={50}
           height={50}
-          className="inline-block"
+          className="inline-block cursor-pointer"
           onClick={() => router.push("/HomePage")}
         />
         <div className="relative">
@@ -113,7 +114,7 @@ const Navbar: React.FC<NavbarProps> = ({
                   <div className="w-16 h-16 bg-gray-600 rounded-full mb-2"></div>
                 )}
                 <p className="text-white">
-                  {session?.user.username || "Loading..."}
+                  {session?.user?.username || "Loading..."}
                 </p>
                 <a
                   href={`/profile/${session?.user.username}`}
@@ -122,16 +123,6 @@ const Navbar: React.FC<NavbarProps> = ({
                   View Profile
                 </a>
               </div>
-              <div className="border-t border-gray-700"></div>
-              <button className="block px-4 py-2 text-sm text-white hover:bg-gray-700 w-full text-left">
-                Settings
-              </button>
-              <button className="block px-4 py-2 text-sm text-white hover:bg-gray-700 w-full text-left">
-                Invite a Friend
-              </button>
-              <button className="block px-4 py-2 text-sm text-white hover:bg-gray-700 w-full text-left">
-                Send Feedback
-              </button>
               <div className="border-t border-gray-700"></div>
               <button
                 className="block px-4 py-2 text-sm text-white hover:bg-gray-700 w-full text-left"
