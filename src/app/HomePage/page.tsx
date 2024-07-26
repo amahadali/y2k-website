@@ -9,7 +9,20 @@ export default function HomePage() {
   const loading = status === "loading";
 
   if (loading) {
-    return <div>Loading...</div>; // or a loading spinner
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-black text-white">
+        <div className="text-xl">Loading...</div>{" "}
+        {/* You can replace this with a spinner */}
+      </div>
+    );
+  }
+
+  if (!session) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-black text-white">
+        <div className="text-xl">You must be logged in to view this page.</div>
+      </div>
+    );
   }
 
   return (

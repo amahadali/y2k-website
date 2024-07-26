@@ -1,3 +1,4 @@
+// src/app/Login/components/LoginForm.tsx
 "use client";
 
 import { useState } from "react";
@@ -6,7 +7,7 @@ import { signIn } from "next-auth/react";
 import Link from "next/link";
 
 interface LoginFormProps {
-  onLoginSuccess?: () => void;
+  onLoginSuccess: () => void;
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
@@ -33,8 +34,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
     if (result?.error) {
       setError(result.error);
     } else {
-      // Redirect to handleLoginSuccess page
-      router.push("/Login/handleLoginSuccess");
+      onLoginSuccess();
     }
   };
 
@@ -88,9 +88,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
       </div>
       <div className="mb-4">
         <button
-          onClick={() =>
-            signIn("google", { callbackUrl: "/Login/handleLoginSuccess" })
-          }
+          onClick={() => signIn("google", { callbackUrl: "/HomePage" })}
           className="w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
           type="button"
         >
