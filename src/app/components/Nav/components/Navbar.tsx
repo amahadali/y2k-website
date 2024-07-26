@@ -5,17 +5,16 @@ import { useRouter } from "next/navigation";
 interface NavbarProps {
   openClusterPopup: () => void;
   openElementPopup: () => void;
-  session: any;
 }
 
 const Navbar: React.FC<NavbarProps> = ({
   openClusterPopup,
   openElementPopup,
-  session,
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [createDropdownOpen, setCreateDropdownOpen] = useState(false);
+  const { data: session } = useSession();
   const router = useRouter();
 
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
