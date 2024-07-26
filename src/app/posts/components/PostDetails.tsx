@@ -50,7 +50,7 @@ const PostDetails: React.FC<PostDetailsProps> = ({
         .then((data) => {
           if (data.success && data.data.length > 0) {
             setPostId(data.data[0]._id); // Assuming there's only one post with this contentId
-            setPostUserId(data.data[0].user); // Set the post user ID
+            setPostUserId(data.data[0].user._id); // Set the post user ID
           }
         })
         .catch((error) => console.error("Error fetching data:", error));
@@ -108,6 +108,12 @@ const PostDetails: React.FC<PostDetailsProps> = ({
               <a href="#" className="block px-4 py-2" onClick={handleCopyLink}>
                 Copy Link
               </a>
+              <button
+                onClick={() => setLibraryPopupOpen(true)}
+                className="block px-4 py-2"
+              >
+                Add to Library
+              </button>
               <a href="#" className="block px-4 py-2 text-red-500">
                 Report
               </a>
@@ -119,12 +125,6 @@ const PostDetails: React.FC<PostDetailsProps> = ({
                   Delete
                 </button>
               )}
-              <button
-                onClick={() => setLibraryPopupOpen(true)}
-                className="block px-4 py-2"
-              >
-                Add to Library
-              </button>
             </div>
           </div>
         )}
