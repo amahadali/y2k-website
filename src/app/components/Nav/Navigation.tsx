@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Navbar from "./components/Navbar";
 import ElementPopup from "./components/ElementPopup";
 import ClusterPopup from "./components/LibraryPopup";
@@ -10,7 +10,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isElementPopupOpen, setIsElementPopupOpen] = useState(false);
   const [isClusterPopupOpen, setIsClusterPopupOpen] = useState(false);
   const [category, setCategory] = useState<string>("");
-  const [refreshKey, setRefreshKey] = useState(0);
+
+  const { status } = useSession();
 
   const openElementPopup = () => setIsElementPopupOpen(true);
   const closeElementPopup = () => setIsElementPopupOpen(false);
@@ -18,19 +19,9 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const openClusterPopup = () => setIsClusterPopupOpen(true);
   const closeClusterPopup = () => setIsClusterPopupOpen(false);
 
-  const { status } = useSession();
-
-  useEffect(() => {
-    if (status === "authenticated" || status === "unauthenticated") {
-      // Trigger a re-render by changing the refreshKey
-      setRefreshKey((prevKey) => prevKey + 1);
-    }
-  }, [status]);
-
   return (
     <div className="min-h-screen flex flex-col bg-gray-900 text-white">
       <Navbar
-        key={refreshKey}
         openClusterPopup={openClusterPopup}
         openElementPopup={openElementPopup}
       />
