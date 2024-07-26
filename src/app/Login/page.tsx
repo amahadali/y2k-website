@@ -1,18 +1,10 @@
-// src/app/Login/page.tsx
 "use client";
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import LoginForm from "./components/LoginForm";
 
 export default function Login() {
-  const router = useRouter();
-
-  const handleLoginSuccess = () => {
-    router.push("/HomePage");
-  };
-
   return (
     <div className="min-h-screen flex flex-col bg-black relative">
       <video
@@ -41,7 +33,7 @@ export default function Login() {
               </Link>
             </a>
           </div>
-          <LoginForm onLoginSuccess={handleLoginSuccess} />
+          <LoginForm />
         </div>
       </div>
     </div>
