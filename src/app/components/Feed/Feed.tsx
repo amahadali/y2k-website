@@ -175,14 +175,6 @@ const Feed: React.FC<FeedProps> = ({
           </div>
         ))}
       </Masonry>
-
-      <div className="mt-6 text-center">
-        <Link href={`/profile/${session?.user.username}`}>
-          <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-            View Profile
-          </button>
-        </Link>
-      </div>
     </main>
   );
 };

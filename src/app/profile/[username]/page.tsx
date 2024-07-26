@@ -18,47 +18,38 @@ interface User {
 const ProfilePage: React.FC = () => {
   const { data: session } = useSession();
   const params = useParams();
-  const username = params?.username as string;
+  const username = params?.username;
   const [user, setUser] = useState<User | null>(null);
   const [loadingUser, setLoadingUser] = useState<boolean>(true);
   const [view, setView] = useState<"posts" | "libraries">("posts");
   const [isEditingProfile, setIsEditingProfile] = useState<boolean>(false);
 
-  // Function to fetch user data
-  const fetchUser = async () => {
-    if (!username) return;
-    try {
-      const response = await fetch(`/api/users/${username}`, {
-        method: "POST", // Use POST method
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username }), // Send username in the body
-      });
-      const data = await response.json();
-      if (data.success) {
-        setUser(data.data);
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch(`/api/users/${username}`, {
+          method: "POST", // Use POST method
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username }), // Send username in the body
+        });
+        const data = await response.json();
+        if (data.success) {
+          setUser(data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      } finally {
+        setLoadingUser(false);
       }
-    } catch (error) {
-      console.error("Error fetching user:", error);
-    } finally {
-      setLoadingUser(false);
-    }
-  };
+    };
 
-  // Initial fetch and refetch when username changes
-  useEffect(() => {
-    fetchUser();
-  }, [username]);
-
-  // Manually trigger re-render when entering the profile page
-  useEffect(() => {
-    if (!loadingUser && !user) {
+    if (username) {
       fetchUser();
     }
-  }, [loadingUser, user]);
+  }, [username]);
 
-  // Handler for profile updates
   const handleProfileUpdated = (
     newUsername: string,
     newProfileImage?: string
@@ -82,7 +73,7 @@ const ProfilePage: React.FC = () => {
   }
 
   return (
-    <Layout key={username}>
+    <Layout>
       <div className="max-w-6xl mx-auto p-4 text-center">
         <div className="flex flex-col items-center">
           <div className="w-32 h-32 bg-gray-700 rounded-full overflow-hidden flex items-center justify-center">
