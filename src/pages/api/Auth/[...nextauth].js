@@ -46,8 +46,9 @@ export const authOptions = {
       allowDangerousEmailAccountLinking: true,
       authorization: {
         params: {
+          scope: "openid profile email",
           access_type: "offline",
-          response_type: "code",
+          prompt: "consent",
         },
       },
     }),
@@ -56,39 +57,36 @@ export const authOptions = {
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
+    cookie: {
+      name: "next-auth.session-token", // Cookie name
+      path: "/", // Path for the cookie
+      sameSite: "lax", // SameSite attribute for security
+      httpOnly: true, // Ensures cookie is not accessible via JavaScript
+      secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+    },
   },
   callbacks: {
     async signIn({ user, account, profile }) {
       await dbConnect();
-      try {
-        if (account.provider === "google") {
-          let existingUser = await User.findOne({ email: user.email });
-          if (existingUser) {
-            // Update existing user with Google info if needed
-            existingUser.profileImage = user.image || existingUser.profileImage;
-            existingUser.username = user.name || existingUser.username;
-            await existingUser.save();
-          } else {
-            // Create new user
-            existingUser = new User({
-              username: user.name,
-              email: user.email,
-              profileImage: user.image,
-              dateJoined: new Date(),
-              libraries: [],
-            });
-            await existingUser.save();
-          }
-          // Ensure user object has consistent properties
-          user.id = existingUser._id;
-          user.username = existingUser.username;
-          user.profileImage = existingUser.profileImage;
+      if (account.provider === "google") {
+        const existingUser = await User.findOne({ email: user.email });
+        if (existingUser) {
+          // User exists, log them in
+          return true;
+        } else {
+          // Create new user if not exists
+          const newUser = new User({
+            username: user.name,
+            email: user.email,
+            profileImage: user.image,
+            dateJoined: new Date(),
+            libraries: [],
+          });
+          await newUser.save();
+          return true;
         }
-        return true;
-      } catch (error) {
-        console.error("Error in signIn callback:", error);
-        return false;
       }
+      return true;
     },
     async jwt({ token, user, trigger, session }) {
       if (user) {
@@ -109,28 +107,16 @@ export const authOptions = {
       return session;
     },
     async linkAccount({ user, account, profile }) {
-      try {
-        await dbConnect();
-        const existingAccount = await User.findOne({
-          "accounts.provider": account.provider,
-          "accounts.providerAccountId": account.providerAccountId,
-        });
+      const existingAccount = await db.collection("accounts").findOne({
+        provider: account.provider,
+        providerAccountId: account.providerAccountId,
+      });
 
-        if (existingAccount) {
-          // Account already linked, no action needed
-          return true;
-        }
-
-        // Link the account
-        await User.findByIdAndUpdate(user.id, {
-          $push: { accounts: account },
-        });
-
-        return true;
-      } catch (error) {
-        console.error("Error in linkAccount callback:", error);
-        return false;
+      if (existingAccount) {
+        account.id = existingAccount._id;
       }
+
+      return true;
     },
   },
   pages: {
