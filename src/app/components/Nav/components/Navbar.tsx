@@ -1,6 +1,8 @@
+// components/Navbar.tsx
 import React, { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Link from "next/link"; // Import Link from next/link
 
 interface NavbarProps {
   openClusterPopup: () => void;
@@ -112,15 +114,14 @@ const Navbar: React.FC<NavbarProps> = ({
                 ) : (
                   <div className="w-16 h-16 bg-gray-600 rounded-full mb-2"></div>
                 )}
-                <p className="text-white">
+                <p className="text-white mb-2">
                   {session?.user?.username || "Loading..."}
                 </p>
-                <a
-                  href={`/profile/${session?.user.username}`}
-                  className="text-blue-500 text-sm"
-                >
-                  View Profile
-                </a>
+                <Link href={`/profile/${session?.user.username}`}>
+                  <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 w-full text-center">
+                    View Profile
+                  </button>
+                </Link>
               </div>
               <div className="border-t border-gray-700"></div>
               <button
