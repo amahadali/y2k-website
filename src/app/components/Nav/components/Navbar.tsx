@@ -1,8 +1,7 @@
-// components/Navbar.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import Link from "next/link"; // Import Link from next/link
+import Link from "next/link";
 
 interface NavbarProps {
   openClusterPopup: () => void;
@@ -16,8 +15,14 @@ const Navbar: React.FC<NavbarProps> = ({
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [createDropdownOpen, setCreateDropdownOpen] = useState(false);
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/Login");
+    }
+  }, [status, router]);
 
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
   const toggleProfileDropdown = () =>
@@ -27,6 +32,10 @@ const Navbar: React.FC<NavbarProps> = ({
   const handleLogout = async () => {
     await signOut({ redirect: true, callbackUrl: "/Login" });
   };
+
+  if (status === "loading") {
+    return null; // Optionally, you can show a loader here as well
+  }
 
   return (
     <header className="flex justify-between items-center p-4 bg-black bg-opacity-90 shadow-lg">
