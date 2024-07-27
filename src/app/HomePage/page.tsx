@@ -14,10 +14,11 @@ export default function HomePage() {
 
   return (
     <Layout>
-      <nav className="flex justify-center space-x-4 mt-8">
-        <button className="text-white text-lg px-4 py-2 bg-gray-800 rounded-md cursor-pointer">
-          Feed
-        </button>
+      <nav className="flex justify-center mt-8">
+        <div className="relative inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-full shadow-md">
+          <span className="absolute inset-0 rounded-full bg-gray-900 opacity-60"></span>
+          <span className="relative">Feed</span>
+        </div>
       </nav>
       <Feed />
     </Layout>
