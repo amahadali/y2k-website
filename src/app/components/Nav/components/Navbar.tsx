@@ -127,7 +127,7 @@ const Navbar: React.FC<NavbarProps> = ({
                   {session?.user?.username || "Loading..."}
                 </p>
                 <Link href={`/profile/${session?.user.username}`}>
-                  <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 w-full text-center">
+                  <button className="text-white hover:underline">
                     View Profile
                   </button>
                 </Link>
