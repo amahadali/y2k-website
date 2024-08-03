@@ -29,7 +29,6 @@ To learn more about Next.js, take a look at the following resources:
 
 
 
-## Deploy on Vercel
 
 ## Deployed Application
  -	Live Site: (https://y2k-website-psi.vercel.app)
