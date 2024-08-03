@@ -1,15 +1,17 @@
-// src/app/SignUp/components/SignupForm.tsx
 "use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 
+// Define the props expected by the SignupForm component
 interface SignupFormProps {
-  onSignupSuccess: () => void;
+  onSignupSuccess: () => void; // Callback function to handle post-signup actions
 }
 
+// Functional component for the signup form
 const SignupForm: React.FC<SignupFormProps> = ({ onSignupSuccess }) => {
+  // State hooks to manage form fields and error messages
   const [showPassword, setShowPassword] = useState(false);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -17,15 +19,18 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSignupSuccess }) => {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
+  // Toggle password visibility
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
+  // Handle form submission
   const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    setError(null);
+    event.preventDefault(); // Prevent default form submission behavior
+    setError(null); // Reset any previous errors
 
     try {
+      // Send signup data to the server
       const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: {
@@ -34,6 +39,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSignupSuccess }) => {
         body: JSON.stringify({ username, email, password }),
       });
 
+      // Check if the signup request was successful
       if (!response.ok) {
         const data = await response.json();
         throw new Error(data.message);
@@ -41,6 +47,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSignupSuccess }) => {
 
       const data = await response.json();
 
+      // Handle successful signup
       if (data.success) {
         // Automatically sign in the user after successful registration
         const result = await signIn("credentials", {
@@ -50,15 +57,16 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSignupSuccess }) => {
         });
 
         if (result?.error) {
-          setError(result.error);
+          setError(result.error); // Handle sign-in error
         } else {
-          onSignupSuccess();
+          onSignupSuccess(); // Call the parent callback function
         }
       } else {
-        setError(data.message);
+        setError(data.message); // Set error message if signup was unsuccessful
         console.log("Signup failed:", data.message);
       }
     } catch (err) {
+      // Handle unexpected errors
       if (err instanceof Error) {
         setError(err.message);
         console.log("Error during signup:", err.message);
@@ -71,7 +79,10 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSignupSuccess }) => {
 
   return (
     <form onSubmit={handleSubmit}>
+      {/* Display error message if any */}
       {error && <div className="mb-4 text-red-500 text-sm">{error}</div>}
+
+      {/* Input field for username */}
       <div className="mb-4">
         <label className="block text-gray-400 text-sm mb-2" htmlFor="username">
           Username
@@ -86,6 +97,8 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSignupSuccess }) => {
           required
         />
       </div>
+
+      {/* Input field for email */}
       <div className="mb-4">
         <label className="block text-gray-400 text-sm mb-2" htmlFor="email">
           Email
@@ -100,6 +113,8 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSignupSuccess }) => {
           required
         />
       </div>
+
+      {/* Input field for password with visibility toggle */}
       <div className="mb-4 relative">
         <label className="block text-gray-400 text-sm mb-2" htmlFor="password">
           Password
@@ -123,6 +138,8 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSignupSuccess }) => {
           </button>
         </div>
       </div>
+
+      {/* Checkbox for terms and conditions */}
       <div className="mb-4 flex items-center">
         <input
           className="mr-2"
@@ -138,6 +155,8 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSignupSuccess }) => {
           </a>
         </label>
       </div>
+
+      {/* Submit button for the form */}
       <div className="mb-4">
         <button
           className="w-full px-4 py-2 bg-white text-black rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -146,6 +165,8 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSignupSuccess }) => {
           Continue
         </button>
       </div>
+
+      {/* Button for signing up with Google */}
       <div className="mb-4">
         <button
           onClick={() => signIn("google", { callbackUrl: "/HomePage" })}

@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect, useRef } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -12,21 +14,27 @@ const Navbar: React.FC<NavbarProps> = ({
   openClusterPopup,
   openElementPopup,
 }) => {
+  // State to manage dropdown visibility
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [createDropdownOpen, setCreateDropdownOpen] = useState(false);
+
+  // Session and router hooks
   const { data: session, status } = useSession();
   const router = useRouter();
 
+  // Refs for dropdowns to handle click outside
   const createDropdownRef = useRef<HTMLDivElement>(null);
   const profileDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Redirect to login if unauthenticated
     if (status === "unauthenticated") {
       router.push("/Login");
     }
   }, [status, router]);
 
   useEffect(() => {
+    // Handle clicks outside of dropdowns to close them
     const handleClickOutside = (event: MouseEvent) => {
       if (
         createDropdownRef.current &&
@@ -46,15 +54,18 @@ const Navbar: React.FC<NavbarProps> = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Toggle functions for dropdowns
   const toggleCreateDropdown = () => setCreateDropdownOpen((prev) => !prev);
   const toggleProfileDropdown = () => setProfileDropdownOpen((prev) => !prev);
 
+  // Handle user logout
   const handleLogout = async () => {
     await signOut({ redirect: true, callbackUrl: "/Login" });
   };
 
+  // Display nothing while loading
   if (status === "loading") {
-    return null; // Optionally, you can show a loader here as well
+    return null; // Optionally, a loader can be added here
   }
 
   return (
@@ -70,7 +81,7 @@ const Navbar: React.FC<NavbarProps> = ({
         />
         <div className="relative">
           <button
-            className="text-white text-md flex items-center space-x-2" // Reduced font size
+            className="text-white text-md flex items-center space-x-2"
             onClick={() => router.push("/HomePage")}
           >
             <span>Home</span>
@@ -122,7 +133,7 @@ const Navbar: React.FC<NavbarProps> = ({
         </div>
         <div className="relative" ref={profileDropdownRef}>
           <div
-            className="w-9 h-9 bg-gray-600 rounded-full cursor-pointer" // Increased profile image size
+            className="w-9 h-9 bg-gray-600 rounded-full cursor-pointer"
             onClick={toggleProfileDropdown}
           >
             {session?.user?.profileImage ? (

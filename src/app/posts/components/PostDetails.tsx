@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState, ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import LibraryPopup from "./LibraryPopup"; // Ensure this path is correct
+import LibraryPopup from "./LibraryPopup";
 
 interface PostDetailsProps {
   fetchUrl: string;
@@ -28,6 +28,7 @@ const PostDetails: React.FC<PostDetailsProps> = ({
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
+    // Extract the content ID from the URL path and fetch data
     const pathParts = window.location.pathname.split("/");
     const newContentId = pathParts[pathParts.length - 1];
     if (newContentId) {
@@ -52,7 +53,7 @@ const PostDetails: React.FC<PostDetailsProps> = ({
         .then((response) => response.json())
         .then((data) => {
           if (data.success && data.data.length > 0) {
-            setPostId(data.data[0]._id); // Assuming there's only one post with this contentId
+            setPostId(data.data[0]._id); // Set post ID
             setPostUserId(data.data[0].user._id); // Set the post user ID
           }
         })
@@ -61,8 +62,8 @@ const PostDetails: React.FC<PostDetailsProps> = ({
   }, [fetchUrl]);
 
   useEffect(() => {
+    // Handle clicks outside the menu to close it
     const handleClickOutside = (event: MouseEvent) => {
-      // Close the menu if clicking outside of the menu and button
       if (
         menuRef.current &&
         !menuRef.current.contains(event.target as Node) &&
@@ -78,7 +79,7 @@ const PostDetails: React.FC<PostDetailsProps> = ({
       document.addEventListener("mousedown", handleClickOutside);
     }
 
-    // Clean up event listener
+    // Clean up event listener when menu closes
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -92,7 +93,7 @@ const PostDetails: React.FC<PostDetailsProps> = ({
         });
 
         if (response.ok) {
-          router.back(); // Redirect back to where the user was before
+          router.back(); // Redirect back to the previous page
         } else {
           console.error("Failed to delete post");
         }
@@ -103,6 +104,7 @@ const PostDetails: React.FC<PostDetailsProps> = ({
   };
 
   const handleCopyLink = () => {
+    // Copy the current page URL to the clipboard
     navigator.clipboard
       .writeText(window.location.href)
       .then(() => {
@@ -114,6 +116,7 @@ const PostDetails: React.FC<PostDetailsProps> = ({
   };
 
   const toggleMenu = () => {
+    // Toggle the visibility of the dropdown menu
     setMenuOpen((prev) => !prev);
   };
 
@@ -130,7 +133,7 @@ const PostDetails: React.FC<PostDetailsProps> = ({
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white relative">
-      {/* "x" Button for Navigation */}
+      {/* Button to navigate back */}
       <button
         onClick={() => router.back()}
         className="absolute top-4 left-4 text-3xl bg-gray-800 text-white rounded-full p-3 hover:bg-gray-700 transition-colors"
@@ -138,11 +141,11 @@ const PostDetails: React.FC<PostDetailsProps> = ({
         ×
       </button>
 
-      {/* Card Container */}
+      {/* Main content card */}
       <div className="relative w-full max-w-lg p-6 bg-gray-800 rounded-lg shadow-lg flex flex-col max-h-[calc(100vh-6rem)] overflow-hidden">
         {contentData ? (
           <div className="flex flex-col h-full">
-            {/* Image */}
+            {/* Image section */}
             {contentData?.imageUrl && (
               <div className="relative mb-4 flex-shrink-0">
                 <img
@@ -152,7 +155,7 @@ const PostDetails: React.FC<PostDetailsProps> = ({
                 />
               </div>
             )}
-            {/* Content */}
+            {/* Content details */}
             <div className="text-lg space-y-4 flex-grow">
               <h2 className="text-3xl font-semibold">{contentData?.title}</h2>
               {contentData?.artistName && (
@@ -169,7 +172,7 @@ const PostDetails: React.FC<PostDetailsProps> = ({
                 {contentData?.description}
               </p>
             </div>
-            {/* Audio Player and Download Button Wrapper */}
+            {/* Audio player and download button */}
             <div className="mt-auto flex flex-col items-center mb-4">
               {contentData?.mp3Url && (
                 <audio controls className="w-full bg-gray-700 rounded-lg">
@@ -192,7 +195,7 @@ const PostDetails: React.FC<PostDetailsProps> = ({
         )}
       </div>
 
-      {/* Dropdown Menu */}
+      {/* Dropdown menu for additional options */}
       <div className="absolute top-4 right-4 flex items-center space-x-2">
         <button
           ref={buttonRef}
@@ -237,7 +240,7 @@ const PostDetails: React.FC<PostDetailsProps> = ({
         )}
       </div>
 
-      {/* Library Popup */}
+      {/* Library popup component */}
       {libraryPopupOpen && (
         <LibraryPopup
           closeLibraryPopup={() => setLibraryPopupOpen(false)}

@@ -8,6 +8,7 @@ import Feed from "../../components/Feed/Feed";
 import LibraryFeed from "../../components/Feed/LibraryFeed";
 import EditProfilePopup from "../components/EditProfilePopup";
 
+// Define the structure of user data
 interface User {
   username: string;
   email: string;
@@ -16,14 +17,18 @@ interface User {
 }
 
 const ProfilePage: React.FC = () => {
+  // Get the session data (for authentication) and URL parameters
   const { data: session } = useSession();
   const params = useParams();
   const username = params?.username;
+
+  // State variables for user data, loading state, view mode, and edit profile state
   const [user, setUser] = useState<User | null>(null);
   const [loadingUser, setLoadingUser] = useState<boolean>(true);
   const [view, setView] = useState<"posts" | "libraries">("posts");
   const [isEditingProfile, setIsEditingProfile] = useState<boolean>(false);
 
+  // Fetch user data when the component mounts or the username changes
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -50,24 +55,24 @@ const ProfilePage: React.FC = () => {
     }
   }, [username]);
 
+  // Function to handle profile updates
   const handleProfileUpdated = (
     newUsername: string,
     newProfileImage?: string
   ) => {
-    setUser((prevUser) => {
-      if (!prevUser) return prevUser;
-      return {
-        ...prevUser,
-        username: newUsername,
-        profileImage: newProfileImage || prevUser.profileImage,
-      };
-    });
+    setUser((prevUser) => ({
+      ...prevUser!,
+      username: newUsername,
+      profileImage: newProfileImage || prevUser?.profileImage,
+    }));
   };
 
+  // Show loading indicator while user data is being fetched
   if (loadingUser) {
     return <div>Loading...</div>;
   }
 
+  // Show error message if user data is not found
   if (!user) {
     return <div>User not found</div>;
   }
@@ -76,6 +81,7 @@ const ProfilePage: React.FC = () => {
     <Layout>
       <div className="max-w-6xl mx-auto p-4 text-center">
         <div className="flex flex-col items-center">
+          {/* Display user's profile image or initials */}
           <div className="w-32 h-32 bg-gray-700 rounded-full overflow-hidden flex items-center justify-center shadow-lg">
             {user.profileImage ? (
               <img
@@ -93,6 +99,7 @@ const ProfilePage: React.FC = () => {
           <p className="text-gray-400">
             Joined on {new Date(user.dateJoined).toLocaleDateString()}
           </p>
+          {/* Show edit profile button if the logged-in user matches the profile being viewed */}
           {session?.user?.username === user.username && (
             <button
               onClick={() => setIsEditingProfile(true)}
@@ -103,7 +110,7 @@ const ProfilePage: React.FC = () => {
           )}
         </div>
 
-        {/* Sliding Tab Container */}
+        {/* Tabs for switching between posts and libraries */}
         <div className="relative flex justify-center mt-4">
           <div className="flex space-x-4 relative">
             <button
@@ -135,6 +142,7 @@ const ProfilePage: React.FC = () => {
           </div>
         </div>
 
+        {/* Render either the Feed or LibraryFeed component based on the selected view */}
         <div className="mt-8">
           {view === "posts" ? (
             <Feed username={user.username} />
@@ -143,6 +151,7 @@ const ProfilePage: React.FC = () => {
           )}
         </div>
 
+        {/* Show profile edit popup if the editing state is true */}
         {isEditingProfile && (
           <EditProfilePopup
             user={user}

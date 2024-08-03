@@ -6,10 +6,12 @@ import { useSession } from "next-auth/react";
 import Layout from "../../../../components/Nav/Navigation";
 import Feed from "../../../../components/Feed/Feed";
 
+// Define the shape of the parameters for the library
 interface LibraryParams {
   libraryId: string;
 }
 
+// Define the structure of a post within the library
 interface Post {
   _id: string;
   title: string;
@@ -27,6 +29,7 @@ interface Post {
   datePosted: string;
 }
 
+// Define the structure of a library, including its posts
 interface Library {
   _id: string;
   name: string;
@@ -36,14 +39,18 @@ interface Library {
 }
 
 const LibraryDetailsPage: React.FC = () => {
+  // Extract the library ID from URL parameters and initialize router and session
   const { libraryId } = useParams() as unknown as LibraryParams;
   const router = useRouter();
   const { data: session } = useSession();
+
+  // State variables for managing library data, loading state, error handling, and menu visibility
   const [library, setLibrary] = useState<Library | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // Function to fetch library data from the API
   const fetchLibrary = async () => {
     try {
       const response = await fetch(`/api/libraries/${libraryId}`, {
@@ -66,12 +73,14 @@ const LibraryDetailsPage: React.FC = () => {
     }
   };
 
+  // Fetch the library data when the component mounts or libraryId changes
   useEffect(() => {
     if (libraryId) {
       fetchLibrary();
     }
   }, [libraryId]);
 
+  // Function to handle library deletion
   const handleDeleteLibrary = async () => {
     try {
       const response = await fetch(`/api/libraries/${libraryId}`, {
@@ -88,6 +97,7 @@ const LibraryDetailsPage: React.FC = () => {
     }
   };
 
+  // Function to handle post deletion from the library
   const handleDeletePost = async (postId: string) => {
     try {
       const response = await fetch(`/api/libraries/${libraryId}`, {
@@ -108,6 +118,7 @@ const LibraryDetailsPage: React.FC = () => {
     }
   };
 
+  // Render loading, error, or library details based on the state
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
   if (!library) return <p>Library not found</p>;
@@ -115,6 +126,7 @@ const LibraryDetailsPage: React.FC = () => {
   return (
     <Layout>
       <div className="max-w-4xl mx-auto p-4">
+        {/* Display library name and description, and show delete menu for the owner */}
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-3xl font-bold">{library.name}</h1>
           {session?.user?.id === library.user && (
@@ -139,6 +151,7 @@ const LibraryDetailsPage: React.FC = () => {
           )}
         </div>
         <p className="text-gray-600 mb-4">{library.description}</p>
+        {/* Render the Feed component to display posts in the library */}
         <Feed
           posts={library.posts}
           isOwner={session?.user?.id === library.user}

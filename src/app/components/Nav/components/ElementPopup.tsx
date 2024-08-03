@@ -23,6 +23,7 @@ const ElementPopup: React.FC<ElementPopupProps> = ({
   const [imageFile, setImageFile] = useState<File | null>(null);
   const { data: session } = useSession();
 
+  // Handles file input changes
   const handleFileChange =
     (setter: React.Dispatch<React.SetStateAction<File | null>>) =>
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,6 +32,7 @@ const ElementPopup: React.FC<ElementPopupProps> = ({
       }
     };
 
+  // Uploads the content based on the selected category
   const handleUpload = async () => {
     if (!imageFile) return;
 
@@ -61,7 +63,7 @@ const ElementPopup: React.FC<ElementPopupProps> = ({
 
       const responseData = await response.json();
       console.log("Content uploaded successfully:", responseData.message);
-      closeElementPopup();
+      closeElementPopup(); // Close the popup on success
     } catch (error) {
       console.error("Error uploading content:", error);
     }
@@ -71,6 +73,7 @@ const ElementPopup: React.FC<ElementPopupProps> = ({
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
       <div className="bg-gray-800 rounded-lg p-8 shadow-lg w-1/3">
         <h2 className="text-2xl mb-4">Create Element</h2>
+        {/* Category selection */}
         <CategorySelect category={category} setCategory={setCategory} />
         {category && (
           <TextInput

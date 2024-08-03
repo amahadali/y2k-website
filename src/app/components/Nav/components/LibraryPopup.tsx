@@ -11,14 +11,16 @@ const ClusterPopup: React.FC<ClusterPopupProps> = ({ closeClusterPopup }) => {
   const [isPrivate, setIsPrivate] = useState(false);
   const { data: session } = useSession();
 
+  // Function to handle creating a new library
   const handleCreate = async () => {
+    // Validate that a name has been provided
     if (!name) return;
 
     const newLibrary = {
       name,
       description,
       isPrivate,
-      user: session?.user.id, // assuming the user object has an id property
+      user: session?.user.id, // Assuming the user object has an id property
     };
 
     try {
@@ -36,7 +38,7 @@ const ClusterPopup: React.FC<ClusterPopupProps> = ({ closeClusterPopup }) => {
 
       const responseData = await response.json();
       console.log("Library created successfully:", responseData.message);
-      closeClusterPopup();
+      closeClusterPopup(); // Close the popup on success
     } catch (error) {
       console.error("Error creating library:", error);
     }

@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import Masonry from "react-masonry-css";
 
+// Define the Post interface for TypeScript
 interface Post {
   _id: string;
   title: string;
@@ -22,20 +23,22 @@ interface Post {
   datePosted: string;
 }
 
+// Define the FeedProps interface for component props
 interface FeedProps {
   username?: string;
   posts?: Post[];
   onDeletePost?: (postId: string) => void;
   isOwner?: boolean;
-  showUploader?: boolean; // New prop to control showing uploader
+  showUploader?: boolean; // Prop to control displaying uploader info
 }
 
+// Feed component definition
 const Feed: React.FC<FeedProps> = ({
   username,
   posts: initialPosts,
   onDeletePost,
   isOwner,
-  showUploader = true, // Default to true
+  showUploader = true, // Default to showing uploader info
 }) => {
   const { data: session, status } = useSession();
   const [posts, setPosts] = useState<Post[]>(initialPosts || []);
@@ -47,6 +50,7 @@ const Feed: React.FC<FeedProps> = ({
 
   useEffect(() => {
     if (!initialPosts && status === "authenticated") {
+      // Fetch posts from the server if not provided initially
       const fetchPosts = async () => {
         try {
           const body = username ? { username } : {};
@@ -75,6 +79,7 @@ const Feed: React.FC<FeedProps> = ({
     }
   }, [username, initialPosts, status]);
 
+  // Play audio on mouse enter and pause on mouse leave
   const handleMouseEnter = (mp3Url: string) => {
     if (currentAudio) {
       currentAudio.pause();
@@ -93,6 +98,7 @@ const Feed: React.FC<FeedProps> = ({
     }
   };
 
+  // Pause audio when post is clicked
   const handlePostClick = () => {
     if (currentAudio) {
       currentAudio.pause();
@@ -100,6 +106,7 @@ const Feed: React.FC<FeedProps> = ({
     }
   };
 
+  // Delete a post and notify parent component
   const handleDeletePost = (postId: string) => {
     setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
     if (onDeletePost) {
@@ -107,10 +114,12 @@ const Feed: React.FC<FeedProps> = ({
     }
   };
 
+  // Display loading, error, or no posts message
   if (loading) return <p className="p-4">Loading...</p>;
   if (error) return <p className="p-4">{error}</p>;
   if (!posts.length) return <p className="p-4">No posts available</p>;
 
+  // Define breakpoints for masonry layout
   const breakpointColumnsObj = {
     default: 6,
     1600: 5,

@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 
+// Define the Library interface for TypeScript
 interface Library {
   _id: string;
   name: string;
@@ -10,16 +11,19 @@ interface Library {
   thumbnails: string[];
 }
 
+// Define the LibraryFeedProps interface for component props
 interface LibraryFeedProps {
   username: string;
 }
 
+// LibraryFeed component definition
 const LibraryFeed: React.FC<LibraryFeedProps> = ({ username }) => {
   const [libraries, setLibraries] = useState<Library[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Function to fetch libraries from the API
     const fetchLibraries = async () => {
       try {
         const response = await fetch("/api/libraries", {
@@ -31,22 +35,23 @@ const LibraryFeed: React.FC<LibraryFeedProps> = ({ username }) => {
         });
         const data = await response.json();
         if (data.success) {
-          setLibraries(data.data);
+          setLibraries(data.data); // Update state with fetched libraries
         } else {
-          setError(data.message);
+          setError(data.message); // Set error message if API call fails
         }
       } catch (error) {
-        setError("Failed to fetch libraries");
+        setError("Failed to fetch libraries"); // Set a generic error message
       } finally {
-        setLoading(false);
+        setLoading(false); // Set loading to false regardless of success or failure
       }
     };
 
     if (username) {
-      fetchLibraries();
+      fetchLibraries(); // Fetch libraries if username is provided
     }
   }, [username]);
 
+  // Conditional rendering based on loading state, error, or absence of libraries
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
   if (!libraries.length) return <p>No libraries available</p>;

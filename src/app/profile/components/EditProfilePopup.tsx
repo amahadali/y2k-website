@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useSession } from "next-auth/react";
 
+// Define the shape of props expected by the EditProfilePopup component
 interface EditProfilePopupProps {
   user: {
     username: string;
@@ -17,25 +18,30 @@ const EditProfilePopup: React.FC<EditProfilePopupProps> = ({
   onClose,
   onProfileUpdated,
 }) => {
+  // State for managing the new username and profile image file
   const [newUsername, setNewUsername] = useState<string>(user.username);
   const [profileImage, setProfileImage] = useState<File | null>(null);
-  const { update } = useSession();
+  const { update } = useSession(); // Function to update the session
 
+  // Handler for file input change event
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       setProfileImage(event.target.files[0]);
     }
   };
 
+  // Handler for form submission
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    // Prepare form data for the API request
     const formData = new FormData();
     formData.append("username", newUsername);
     if (profileImage) {
       formData.append("profileImage", profileImage);
     }
 
+    // Send form data to the API to update the profile
     const response = await fetch("/api/users/updateProfile", {
       method: "POST",
       body: formData,
@@ -44,7 +50,7 @@ const EditProfilePopup: React.FC<EditProfilePopupProps> = ({
     const data = await response.json();
 
     if (data.success) {
-      // Update the session with new data
+      // Update the session with the new profile data
       await update({
         username: newUsername,
         profileImage: data.data.profileImage,
@@ -63,6 +69,7 @@ const EditProfilePopup: React.FC<EditProfilePopupProps> = ({
       <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-2xl font-semibold text-white mb-4">Edit Profile</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Input field for updating the username */}
           <div>
             <label className="block text-gray-300 font-medium">Username</label>
             <input
@@ -72,6 +79,7 @@ const EditProfilePopup: React.FC<EditProfilePopupProps> = ({
               className="w-full px-4 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
           </div>
+          {/* Input field for uploading a new profile image */}
           <div>
             <label className="block text-gray-300 font-medium">
               Profile Image
@@ -82,6 +90,7 @@ const EditProfilePopup: React.FC<EditProfilePopupProps> = ({
               className="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
             />
           </div>
+          {/* Display a preview of the selected profile image */}
           {profileImage && (
             <div className="flex justify-center">
               <img
@@ -91,6 +100,7 @@ const EditProfilePopup: React.FC<EditProfilePopupProps> = ({
               />
             </div>
           )}
+          {/* Buttons for canceling or submitting the form */}
           <div className="flex justify-end space-x-2">
             <button
               type="button"

@@ -1,17 +1,18 @@
-import dbConnect from "../../../../lib/dbConnect";
-import Library from "../../../../models/Library";
-import { getToken } from "next-auth/jwt";
+import dbConnect from "../../../../lib/dbConnect"; // Import database connection utility
+import Library from "../../../../models/Library"; // Import the Library model for database operations
+import { getToken } from "next-auth/jwt"; // Import token utility for authentication
 
 export default async function handler(req, res) {
-  await dbConnect();
+  await dbConnect(); // Ensure a connection to the database
 
+  // Retrieve and verify the JWT token from the request
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   if (!token) {
     console.error("Authentication required");
     return res.status(401).json({ message: "Authentication required" });
   }
 
-  const userId = token.sub;
+  const userId = token.sub; // Extract the user ID from the token
 
   switch (req.method) {
     case "DELETE":
@@ -63,6 +64,7 @@ export default async function handler(req, res) {
             .json({ success: false, message: "Unauthorized" });
         }
 
+        // Add or remove post from the library based on action
         if (action === "add") {
           if (!library.posts.includes(postId)) {
             library.posts.push(postId);
@@ -101,6 +103,7 @@ export default async function handler(req, res) {
       break;
 
     default:
+      // Handle unsupported HTTP methods
       res.setHeader("Allow", ["PATCH", "POST", "DELETE"]);
       res.status(405).end(`Method ${req.method} Not Allowed`);
       break;
